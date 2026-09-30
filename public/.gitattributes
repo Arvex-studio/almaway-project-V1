@@ -1,0 +1,3 @@
+# Tiny exported icons belong in normal Git; retain root LFS rules for large assets.
+icon*.png -filter -diff -merge
+apple-icon.png -filter -diff -merge

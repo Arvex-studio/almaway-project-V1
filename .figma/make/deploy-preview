@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# Build in development mode to emit sourcemaps.
-pnpm run build --mode development
-figma make deploy-preview --build-dir dist
+printf '%s\n' 'AlmaWay now uses Next.js. Configure a Next.js hosting target in the deployment phase.' >&2
+exit 1

@@ -10,13 +10,13 @@
   //   "installOn": { "includes": ["**/*.json"], "excludes": ["test/**"] }
   //
   // Only list files that affect the *toolchain or dependency tree* here —
-  // NOT application source files. Vite's dev server already watches
-  // application code (src/**/*) and config (vite.config.ts) via its own HMR
+  // NOT application source files. Next.js already watches
+  // application code (app/**/*, components/**/*) and config (next.config.mjs) via its own HMR
   // pipeline, so including them here would cause a redundant full restart.
   "installOn": [
     "package.json",
     "pnpm-lock.yaml"
   ],
   // Files whose changes trigger only a dev server restart (no install).
-  "restartOn": []
+  "restartOn": ["next.config.mjs"]
 }
