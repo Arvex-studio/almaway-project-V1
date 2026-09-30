@@ -4,10 +4,10 @@ Canonical frontend: Next.js App Router, React, TypeScript, Tailwind CSS v4.
 The approved V1 design and mock/demo state must be preserved.
 
 - Application routes live in `app/`; `/` redirects to `/map`.
-- Shared components live in `components/`; the mock `MapSurface` is the future map integration boundary.
-- Mock place data lives in `lib/almaway-data.ts`; global design tokens/styles live in `app/globals.css`.
+- Shared components live in `components/`; `components/map/map-surface.tsx` is the provider-independent map boundary.
+- Approved mock detail data lives in `lib/almaway-data.ts`; verified map points live in `lib/tourist-places.ts`; global design tokens/styles live in `app/globals.css`.
 - Use pnpm (version in `.mise.toml` and `package.json`).
-- Run `pnpm install --frozen-lockfile`, `pnpm build`, and `pnpm typecheck`.
+- Run `pnpm install --frozen-lockfile`, `pnpm build`, `pnpm typecheck`, and `pnpm test`.
 - `pnpm dev` listens on `$PORT` or port 3000; do not assume a server is already running.
 - Do not add production maps, AI, authentication, or database integrations without an explicit task.
 - Keep secrets, dependencies, and build outputs out of Git.

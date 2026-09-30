@@ -1284,3 +1284,21 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(47,125,91,.28); 
 /* Native dialog retains the approved preview styling and provides focus/keyboard handling. */
 .preview-dialog { width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; border: 0; color: inherit; }
 .inline-link { padding: 0; background: transparent; }
+
+/* Map provider integration; approved surrounding layout/tokens remain unchanged. */
+.map-engine { position: absolute; inset: 0; }
+.real-map .maplibregl-canvas:focus-visible { outline: 3px solid var(--green); outline-offset: -3px; }
+.almaway-marker { width: 3.1rem; height: 3.3rem; display: grid; place-items: center; }
+.almaway-marker .map-pin, .almaway-marker .cluster-pin { position: relative; inset: auto; }
+.almaway-marker:has(.selected) { z-index: 3; }
+.real-map .maplibregl-ctrl-bottom-left { bottom: calc(4.35rem + env(safe-area-inset-bottom) + 0.25rem); left: 0.25rem; z-index: 25; }
+.real-map .maplibregl-ctrl-attrib { font-size: 10px; }
+.map-message { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: min(20rem, calc(100% - 2rem)); padding: 1.25rem; border-radius: 1rem; background: var(--white); color: var(--forest); box-shadow: var(--shadow-soft); text-align: center; }
+.map-message p { color: var(--stone); font-size: 0.8rem; }
+.map-message .secondary-button { margin-top: 0.5rem; }
+.map-notice { position: absolute; top: 8.75rem; left: 1rem; right: 1rem; padding: 0.75rem; display: flex; align-items: center; gap: 0.5rem; border-radius: 0.8rem; background: var(--white); color: var(--forest); font-size: 0.75rem; box-shadow: var(--shadow-soft); }
+.map-notice button { margin-left: auto; background: transparent; color: inherit; font-size: 1.2rem; }
+.map-layer-option { display: flex; align-items: center; gap: 0.5rem; padding-block: 0.5rem; }
+.map-layer-option input { accent-color: var(--green); }
+.map-controls button:disabled { opacity: 0.45; cursor: default; }
+.almaway-location { width: 1rem; height: 1rem; border: 3px solid white; border-radius: 50%; background: var(--lake); box-shadow: 0 0 0 5px rgba(61,143,209,0.2); }

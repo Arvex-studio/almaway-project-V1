@@ -1,3 +1,14 @@
+export interface PlaceDetails {
+  slug: string
+  title: string
+  region: string
+  distance?: string
+  image?: string
+  why: string
+  description: string
+  metrics: readonly { key: 'difficulty' | 'duration' | 'route' | 'elevation'; label: string; value: string }[]
+}
+
 export const place = {
   slug: 'bolshoe-almatinskoe-ozero',
   title: 'Большое Алматинское озеро',

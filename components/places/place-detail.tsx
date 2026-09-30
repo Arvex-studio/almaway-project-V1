@@ -5,21 +5,22 @@ import { SaveButton } from '@/components/demo-state'
 import { DemoAction } from '@/components/future/demo-dialog'
 import { ChevronLeft, Clock3, Compass, MapPin, Mountain, Route, Send, ShieldCheck, Sparkles, Car, Navigation } from 'lucide-react'
 import { AppShell, MetricItem, InfoSection, detailIcons } from '@/components/almaway'
-import { place } from '@/lib/almaway-data'
+import { place as lake, type PlaceDetails } from '@/lib/almaway-data'
 
-export default function PlaceDetail() {
+export default function PlaceDetail({ place = lake }: { place?: PlaceDetails }) {
+  const isLake = place.slug === lake.slug
 
   return (
     <AppShell className="detail-shell">
       <main className="detail-page">
-        <div className="hero-photo" style={{ backgroundImage: `url(${place.image})` }}>
+        <div className="hero-photo" style={{ backgroundImage: place.image ? `url(${place.image})` : undefined }}>
           <div className="hero-top">
             <Link href="/map" className="floating-icon" aria-label="Назад">
               <ChevronLeft />
             </Link>
             <div>
               <DemoAction className="floating-icon" label="Поделиться" title="Поделиться" description={`Ссылка на место: /places/${place.slug}`}><Send /></DemoAction>
-              <SaveButton className="floating-icon"><MapPin /></SaveButton>
+              <SaveButton slug={place.slug} title={place.title} className="floating-icon"><MapPin /></SaveButton>
             </div>
           </div>
           <div className="hero-caption">
@@ -45,17 +46,17 @@ export default function PlaceDetail() {
             })}
           </div>
 
-          <div className="season-note">
+          {isLake && <div className="season-note">
             <Compass />
             <div>
               <span>Лучшее время</span>
               <strong>Май — октябрь · утром меньше людей</strong>
             </div>
             <b>≈ 8 000 ₸</b>
-          </div>
+          </div>}
 
           <div className="action-grid">
-            <SaveButton />
+            <SaveButton slug={place.slug} title={place.title} />
             <Link href="/plan" className="primary-button">Спланировать</Link>
             <Link href="/plan" className="secondary-button">
               <Sparkles /> Спросить AI
@@ -66,7 +67,7 @@ export default function PlaceDetail() {
             {place.why}
           </InfoSection>
 
-          <InfoSection icon={Car} title="Как добраться">
+          {isLake && <><InfoSection icon={Car} title="Как добраться">
             Из Алматы по улице Дулати до поста нацпарка. Последние 8 км — пешком или на экотранспорте.
           </InfoSection>
 
@@ -125,7 +126,7 @@ export default function PlaceDetail() {
               </div>
               <DemoAction title="Отзывы" description="Добавление отзывов появится после подключения аккаунтов."><Navigation /> Добавить</DemoAction>
             </div>
-          </section>
+          </section></>}
         </div>
       </main>
     </AppShell>
