@@ -8,7 +8,8 @@
     "build": "node scripts/prepare-maplibre.mjs && next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test": "node scripts/test-map.mjs"
+    "test": "node scripts/test-map.mjs",
+    "test:hiking-times": "node --experimental-strip-types --test tests/human-route-times.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
