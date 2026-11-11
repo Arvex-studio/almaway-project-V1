@@ -1,32 +1,29 @@
-'use client'
-
-import { useState } from 'react'
-import Link from 'next/link'
+"use client";
+import Link from "next/link";
 import {
-  Award,
+  Bookmark,
+  BookOpen,
   ChevronRight,
-  Compass,
+  Route,
   Settings,
-  ShieldCheck,
-  Sparkles,
-} from 'lucide-react'
-import { DemoDialog, DemoAction } from '@/components/future/demo-dialog'
-import { AppShell } from '@/components/almaway'
+  UserRound,
+} from "lucide-react";
+import { AppShell } from "@/components/almaway";
+import { DemoAction } from "@/components/future/demo-dialog";
+import { useDemoSaved } from "@/components/demo-state";
 export default function ProfilePage() {
-  const [journey, setJourney] = useState(false)
+  const { savedSlugs } = useDemoSaved();
   return (
     <AppShell className="content-shell">
       <main className="content-page profile-page">
-        <p className="demo-notice">
-          Демо-профиль · Алина Ким, статистика и достижения — вымышленные
-          примеры. Это не данные твоего аккаунта.
-        </p>
-        <header className="profile-header">
-          <div className="avatar-profile">AK</div>
+        <header className="guest-header">
+          <span className="guest-avatar">
+            <UserRound />
+          </span>
           <div>
-            <span className="eyebrow">ПУТЕШЕСТВЕННИК</span>
-            <h1>Алина Ким</h1>
-            <p>Алматы · ищу тихие маршруты</p>
+            <span className="eyebrow">ТВОЙ ALMAWAY</span>
+            <h1>Твой путь начинается здесь</h1>
+            <p>Исследуй места и собирай идеи для следующей поездки.</p>
           </div>
           <DemoAction
             className="icon-button"
@@ -37,87 +34,66 @@ export default function ProfilePage() {
             <Settings />
           </DemoAction>
         </header>
-        <section className="profile-stats">
-          <div>
-            <strong>18</strong>
-            <span>мест посещено</span>
-          </div>
-          <div>
-            <strong>7</strong>
-            <span>маршрутов</span>
-          </div>
-          <div>
-            <strong>24</strong>
-            <span>сохранения</span>
-          </div>
-        </section>
-        <section className="passport-card">
-          <div>
-            <span className="eyebrow">TRAVEL PASSPORT</span>
-            <h2>Следующий горизонт</h2>
-            <p>Прошла 126 км из 200 км в этом сезоне.</p>
-            <div className="progress">
-              <i />
+        <p className="demo-notice">
+          Ты в гостевом режиме. Аккаунты не подключены. Сохранения и черновики
+          доступны только в памяти этой вкладки.
+        </p>
+        <section className="profile-tools">
+          <Link href="/saved">
+            <Bookmark />
+            <div>
+              <strong>Мои места</strong>
+              <small>{savedSlugs.length} в демо-сохранениях</small>
             </div>
-          </div>
-          <Compass />
+            <ChevronRight />
+          </Link>
+          <Link href="/journal">
+            <BookOpen />
+            <div>
+              <strong>Полевой журнал</strong>
+              <small>Истории, фото и локальные черновики</small>
+            </div>
+            <ChevronRight />
+          </Link>
+          <Link href="/plan">
+            <Route />
+            <div>
+              <strong>Подготовить поездку</strong>
+              <small>Демо планировщика</small>
+            </div>
+            <ChevronRight />
+          </Link>
+          <Link href="/map">
+            <Route />
+            <div>
+              <strong>Открыть карту</strong>
+              <small>Найти свою следующую точку</small>
+            </div>
+            <ChevronRight />
+          </Link>
         </section>
-        <button
-          type="button"
-          className="journey-preview"
-          onClick={() => setJourney(true)}
+        <DemoAction
+          className="journey-banner"
+          title="Journey Mode · концепт"
+          description="Режим путешествия пока проектируется. Здесь нет отслеживания GPS, навигации или проверенного трека. Иллюстрация — художественный образ."
         >
-          <div className="journey-art">
-            <span />
-            <i />
-            <b />
-          </div>
+          <img src="/images/journey.webp" alt="" width="1200" height="400" />
           <div>
             <span className="eyebrow">JOURNEY MODE · СКОРО</span>
             <h2>
-              Прожить маршрут
+              Быть в моменте.
               <br />
-              не торопясь
+              Помнить дорогу.
             </h2>
-            <p>Треки, чекпоинты и подсказки по пути.</p>
+            <p>
+              Личный дневник путешествия — от первой идеи до последнего кадра.
+            </p>
+            <span className="text-action">
+              О концепте <ChevronRight />
+            </span>
           </div>
-          <ChevronRight />
-        </button>
-        <div className="section-head">
-          <div>
-            <span className="eyebrow">ПРИМЕР ИСТОРИИ</span>
-            <h2>Достижения</h2>
-          </div>
-          <span className="coming-soon">В разработке</span>
-        </div>
-        <div className="achievement-row">
-          <div>
-            <Award />
-            <strong>Первый шаг</strong>
-            <span>1 маршрут</span>
-          </div>
-          <div>
-            <ShieldCheck />
-            <strong>Осознанный путь</strong>
-            <span>Скоро</span>
-          </div>
-          <div>
-            <Sparkles />
-            <strong>Новый сезон</strong>
-            <span>Скоро</span>
-          </div>
-        </div>
-        {journey && (
-          <DemoDialog
-            eyebrow="JOURNEY MODE"
-            title="В разработке"
-            onClose={() => setJourney(false)}
-          >
-            Офлайн-навигация, прогресс и safety check появятся в следующей
-            версии.
-          </DemoDialog>
-        )}
+        </DemoAction>
       </main>
     </AppShell>
-  )
+  );
 }

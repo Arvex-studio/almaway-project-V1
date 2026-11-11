@@ -5,12 +5,12 @@ import { resolve } from 'node:path'
 // Run against a built app or preview. Never record the share token in artifacts.
 const baseURL = process.env.ALMAWAY_AUDIT_URL || 'http://127.0.0.1:3200'
 const output = resolve(process.env.ALMAWAY_AUDIT_DIR || 'test-results/frontend-audit')
-const paths = ['/map', '/explore', '/plan', '/saved', '/profile', '/places/bolshoe-almatinskoe-ozero']
+const paths = ['/map', '/explore', '/plan', '/saved', '/profile', '/places/bolshoe-almatinskoe-ozero', '/journal']
 await mkdir(output, { recursive: true })
 const browser = await chromium.launch({ args: ['--enable-unsafe-swiftshader'] })
 const results = []
 try {
-  for (const [device, width, height] of [['desktop', 1440, 1000], ['mobile', 390, 844]]) {
+  for (const [device, width, height] of [['desktop', 1440, 900], ['mobile', 390, 844]]) {
     const page = await browser.newPage({ viewport: { width, height }, reducedMotion: 'reduce' })
     if (process.env.ALMAWAY_PREVIEW_SHARE) {
       const url = new URL('/map', baseURL)

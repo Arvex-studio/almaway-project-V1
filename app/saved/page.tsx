@@ -1,17 +1,18 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { Bookmark, ChevronRight, Map, Route } from 'lucide-react'
-import { AppShell } from '@/components/almaway'
-import { useDemoSaved } from '@/components/demo-state'
-import { touristPlaces } from '@/lib/tourist-places'
+import { useState } from "react";
+import Link from "next/link";
+import { PhotoCredit } from "@/components/editorial";
+import { Bookmark, ChevronRight, Map, Route } from "lucide-react";
+import { AppShell } from "@/components/almaway";
+import { useDemoSaved, SaveButton } from "@/components/demo-state";
+import { touristPlaces } from "@/lib/tourist-places";
 export default function SavedPage() {
-  const [tab, setTab] = useState('Места')
-  const { savedSlugs } = useDemoSaved()
+  const [tab, setTab] = useState("Места");
+  const { savedSlugs } = useDemoSaved();
   const places = touristPlaces.filter((place) =>
     savedSlugs.includes(place.slug),
-  )
+  );
   return (
     <AppShell className="content-shell">
       <main className="content-page">
@@ -29,11 +30,11 @@ export default function SavedPage() {
           не подключён.
         </p>
         <div className="segmented" aria-label="Тип сохранённого">
-          {['Места', 'Маршруты', 'Планы'].map((item) => (
+          {["Места", "Маршруты", "Планы"].map((item) => (
             <button
               type="button"
               aria-pressed={tab === item}
-              className={tab === item ? 'selected' : ''}
+              className={tab === item ? "selected" : ""}
               onClick={() => setTab(item)}
               key={item}
             >
@@ -41,21 +42,31 @@ export default function SavedPage() {
             </button>
           ))}
         </div>
-        {tab === 'Места' && places.length > 0 ? (
+        {tab === "Места" && places.length > 0 ? (
           places.map((place) => (
             <article key={place.slug} className="saved-card">
-              <div
-                className="saved-image"
-                style={{
-                  backgroundImage: place.image
-                    ? `url(${place.image})`
-                    : undefined,
-                }}
-              />
+              <figure>
+                <div
+                  className="saved-image"
+                  style={{
+                    backgroundImage: place.image
+                      ? `url(${place.image})`
+                      : undefined,
+                  }}
+                />
+                {place.image && <PhotoCredit />}
+              </figure>
               <div>
                 <span className="eyebrow">{place.region}</span>
                 <h2>{place.title}</h2>
                 <p>Параметры маршрута уточняются.</p>
+                <SaveButton
+                  slug={place.slug}
+                  title={place.title}
+                  className="saved-remove"
+                >
+                  Убрать из сохранённого
+                </SaveButton>
                 <div className="card-actions">
                   <Link
                     href={`/places/${place.slug}`}
@@ -63,7 +74,10 @@ export default function SavedPage() {
                   >
                     Открыть <ChevronRight />
                   </Link>
-                  <Link href="/map" className="primary-button">
+                  <Link
+                    href={`/map?place=${place.slug}`}
+                    className="primary-button"
+                  >
                     На карте <Map />
                   </Link>
                 </div>
@@ -75,12 +89,12 @@ export default function SavedPage() {
             <Route />
             <h2>Здесь появятся {tab.toLowerCase()}</h2>
             <p>
-              {tab === 'Места'
-                ? 'Сохрани место из Открытий — оно появится здесь до перезагрузки страницы.'
-                : 'Сохранение маршрутов и планов пока не подключено.'}
+              {tab === "Места"
+                ? "Сохрани место из Открытий — оно появится здесь до перезагрузки страницы."
+                : "Сохранение маршрутов и планов пока не подключено."}
             </p>
             <Link
-              href={tab === 'Планы' ? '/plan' : '/explore'}
+              href={tab === "Планы" ? "/plan" : "/explore"}
               className="primary-button"
             >
               Найти идеи
@@ -96,5 +110,5 @@ export default function SavedPage() {
         </section>
       </main>
     </AppShell>
-  )
+  );
 }

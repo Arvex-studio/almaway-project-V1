@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { PhotoCredit } from '@/components/editorial'
 import {
   ArrowRight,
   Car,
@@ -81,7 +82,7 @@ export default function PlanPage() {
               <span className="result-count">1 пример</span>
             </div>
             <article className="plan-card">
-              <div className="plan-image" />
+              <figure><div className="plan-image" /><PhotoCredit /></figure>
               <div className="plan-body">
                 <span className="eyebrow">АЛМАТИНСКИЙ РЕГИОН</span>
                 <h3>Большое Алматинское озеро</h3>
