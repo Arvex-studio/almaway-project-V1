@@ -1,171 +1,141 @@
 'use client'
-
 import Link from 'next/link'
 import { useState } from 'react'
-import { SaveButton } from '@/components/demo-state'
-import { ChevronRight, Map, Route, Sparkles } from 'lucide-react'
+import { ArrowUpRight, ArrowRight } from 'lucide-react'
 import { AppShell, FilterChip } from '@/components/almaway'
-import { getTouristPlace } from '@/lib/tourist-places'
-
-const cards = [
-  {
-    title: 'Большое Алматинское озеро',
-    slug: 'bolshoe-almatinskoe-ozero',
-    eyebrow: 'Рядом с Алматы',
-    filters: ['Рядом', 'На выходные', 'С видом'],
-    image: getTouristPlace('bolshoe-almatinskoe-ozero')?.image,
-    text: 'Бирюзовая вода, хвойные склоны и горный воздух.',
-  },
+import { SaveButton } from '@/components/demo-state'
+import { PhotoCredit } from '@/components/editorial'
+const ideas = [
   {
     title: 'Ущелье Аюсай',
     slug: 'ayusay',
-    eyebrow: 'Идея для прогулки',
-    filters: ['Рядом', 'С видом'],
-    image:
-      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1000&q=85',
-    text: 'Идея для знакомства с ущельем. Проверенная карточка ещё готовится.',
+    tag: 'Рядом',
+    text: 'Ущелье в предгорьях. Собираем проверенные сведения о месте.',
   },
   {
     title: 'Кольсайские озёра',
     slug: 'kolsay-lakes',
-    eyebrow: 'На выходные',
-    filters: ['На выходные', 'С видом'],
-    image:
-      'https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1000&q=85',
-    text: 'Идея для поездки к озёрам. Проверенная карточка ещё готовится.',
+    tag: 'На выходные',
+    text: 'Озёра среди гор. Готовим карточку и источники для будущих поездок.',
   },
 ]
-
-export default function ExplorePage() {
+export default function Explore() {
   const [filter, setFilter] = useState('Все идеи')
-  const visibleCards = cards.filter(
-    (card) => filter === 'Все идеи' || card.filters.includes(filter),
-  )
   return (
     <AppShell className="content-shell">
-      <main className="content-page">
-        <header className="page-header">
+      <main className="atlas-explore content-page">
+        <header className="atlas-title">
+          <span className="eyebrow">01 / ОТКРЫТИЯ</span>
+          <h1>
+            За пределами
+            <br />
+            <em>города.</em>
+          </h1>
           <div>
-            <span className="eyebrow">ALMAWAY / ОТКРЫТИЯ</span>
-            <h1>
-              Места, которые
-              <br />
-              <em>хочется запомнить.</em>
-            </h1>
             <p>
-              Идеи для будущих поездок. Перед выездом проверь погоду и
-              доступность маршрута.
+              Алматы заканчивается.
+              <br />
+              Открытия — нет.
             </p>
+            <Link href="/map" className="atlas-text-link">
+              Исследовать карту <ArrowUpRight />
+            </Link>
           </div>
-          <Link
-            href="/profile"
-            className="avatar-large"
-            aria-label="Демо-профиль"
-          >
-            AK
-          </Link>
         </header>
         <div className="chip-row">
-          {['Все идеи', 'Рядом', 'На выходные', 'С видом'].map((item) => (
+          {['Все идеи', 'Рядом', 'На выходные', 'С видом'].map((x) => (
             <FilterChip
-              key={item}
-              active={filter === item}
-              onClick={() => setFilter(item)}
+              key={x}
+              active={filter === x}
+              onClick={() => setFilter(x)}
             >
-              {item}
+              {x}
             </FilterChip>
           ))}
         </div>
-        <section className="editorial-intro">
-          <div>
-            <Sparkles />
-            <span>Идея для поездки</span>
-            <h2>
-              Ближе к горам,
-              <br />
-              ближе к природе
-            </h2>
-            <Link href="/places/bolshoe-almatinskoe-ozero">
-              Посмотреть место <ChevronRight />
+        <article className="atlas-feature">
+          <figure>
+            <Link
+              href="/places/bolshoe-almatinskoe-ozero"
+              aria-label="Открыть: Большое Алматинское озеро"
+            >
+              <img
+                src="/images/bao.webp"
+                alt="Заснеженные склоны вокруг Большого Алматинского озера"
+                fetchPriority="high"
+              />
             </Link>
+            <span className="atlas-index">01</span>
+            <PhotoCredit />
+          </figure>
+          <div className="atlas-feature-copy">
+            <span className="eyebrow">ОЗЕРО / ЗАИЛИЙСКИЙ АЛАТАУ</span>
+            <Link href="/places/bolshoe-almatinskoe-ozero">
+              <h2>
+                Большое
+                <br />
+                Алматинское озеро
+              </h2>
+            </Link>
+            <p>
+              Вода, камень, тишина. Посмотри на знакомые горы с другой стороны.
+            </p>
+            <div className="card-actions">
+              <Link
+                className="primary-button"
+                href="/places/bolshoe-almatinskoe-ozero"
+              >
+                Открыть место <ArrowUpRight />
+              </Link>
+              <SaveButton
+                slug="bolshoe-almatinskoe-ozero"
+                title="Большое Алматинское озеро"
+              />
+            </div>
           </div>
-          <div className="intro-image" />
-        </section>
+        </article>
         <p className="demo-notice">
-          Предварительная подборка · фотографии иллюстративные. Сохранения
-          работают только в текущей сессии.
+          Предварительная подборка. Перед поездкой проверь погоду и ограничения.
+          Сохранения — только на время сессии.
         </p>
-        <div className="section-head">
-          <div>
-            <span className="eyebrow">ВДОХНОВЕНИЕ ДЛЯ ПОЕЗДКИ</span>
-            <h2>Идеи для открытий</h2>
+        <section className="atlas-directory">
+          <div className="section-head">
+            <h2>Следующие открытия</h2>
+            <span className="eyebrow">В РАБОТЕ / 02—03</span>
           </div>
-          <Link href="/map">
-            Карта <Map />
-          </Link>
-        </div>
-        <div className="place-grid">
-          {visibleCards.map((card) => {
-            const catalogPlace = getTouristPlace(card.slug)
-            return (
-              <article className="editorial-card" key={card.slug}>
-                {catalogPlace ? (
-                  <Link
-                    href={`/places/${catalogPlace.slug}`}
-                    aria-label={`Открыть: ${catalogPlace.title}`}
-                    className="card-image"
-                    style={{ backgroundImage: `url(${card.image})` }}
-                  />
-                ) : (
-                  <div
-                    className="card-image"
-                    style={{ backgroundImage: `url(${card.image})` }}
-                  />
-                )}
-                <div className="card-copy">
-                  <span className="eyebrow">{card.eyebrow}</span>
-                  {catalogPlace ? (
-                    <Link href={`/places/${catalogPlace.slug}`}>
-                      <h3>{catalogPlace.title}</h3>
-                    </Link>
-                  ) : (
-                    <h3>{card.title}</h3>
-                  )}
-                  <p>{card.text}</p>
-                  {catalogPlace ? (
-                    <div className="card-actions">
-                      <SaveButton
-                        slug={catalogPlace.slug}
-                        title={catalogPlace.title}
-                      />
-                      <Link
-                        href={`/places/${catalogPlace.slug}`}
-                        className="primary-button"
-                      >
-                        Подробнее
-                      </Link>
-                    </div>
-                  ) : (
-                    <p className="availability-note">
-                      Скоро в каталоге · открытие и сохранение пока недоступны.
-                    </p>
-                  )}
-                </div>
-              </article>
+          {ideas
+            .filter(
+              (x) =>
+                filter === 'Все идеи' ||
+                filter === 'С видом' ||
+                filter === x.tag,
             )
-          })}
-        </div>
-        <section className="route-banner">
-          <Route />
-          <div>
-            <span className="eyebrow">ДЕМО ПЛАНИРОВЩИКА</span>
-            <h2>Представь свой день в горах</h2>
-            <p>Посмотри пример плана — без актуальных маршрутных данных.</p>
-          </div>
-          <Link href="/plan" aria-label="Открыть демо планировщика">
-            <ChevronRight />
-          </Link>
+            .map((x, i) => (
+              <article className="atlas-row" key={x.slug}>
+                <span className="atlas-number">0{ideas.indexOf(x) + 2}</span>
+                <div>
+                  <span className="eyebrow">{x.tag}</span>
+                  <h3>{x.title}</h3>
+                  <p>{x.text}</p>
+                  <p className="availability-note">
+                    Скоро в каталоге · открытие и сохранение пока недоступны.
+                  </p>
+                </div>
+                <ArrowUpRight aria-hidden="true" />
+              </article>
+            ))}
         </section>
+        <Link href="/plan" className="atlas-plan-link">
+          <span className="eyebrow">ДЕМО ПЛАНИРОВЩИКА</span>
+          <strong>
+            Меньше планов.
+            <br />
+            Больше открытий.
+          </strong>
+          <span>
+            Посмотреть пример <ArrowRight />
+          </span>
+        </Link>
       </main>
     </AppShell>
   )

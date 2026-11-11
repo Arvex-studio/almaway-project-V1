@@ -10,7 +10,7 @@ await mkdir(output, { recursive: true })
 const browser = await chromium.launch({ args: ['--enable-unsafe-swiftshader'] })
 const results = []
 try {
-  for (const [device, width, height] of [['desktop', 1440, 1000], ['mobile', 390, 844]]) {
+  for (const [device, width, height] of [['desktop', 1440, 900], ['mobile', 390, 844]]) {
     const page = await browser.newPage({ viewport: { width, height }, reducedMotion: 'reduce' })
     if (process.env.ALMAWAY_PREVIEW_SHARE) {
       const url = new URL('/map', baseURL)

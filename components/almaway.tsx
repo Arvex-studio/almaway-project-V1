@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { Masthead, PhotoCredit } from '@/components/editorial'
 import { usePathname } from 'next/navigation'
 import {
   Bookmark,
@@ -66,6 +67,7 @@ export function AppShell({
   return (
     <div className="app-shell">
       <div className={`phone-frame ${className}`}>
+        <Masthead />
         {children}
         <BottomNav />
       </div>
@@ -254,9 +256,10 @@ export function PlacePreviewSheet({
               : undefined,
           }}
         >
-          <span className="photo-tag">Иллюстрация</span>
+          <span className="photo-tag">{selectedPlace.image ? 'Фото места' : 'Фото готовится'}</span>
         </div>
         <div className="sheet-info">
+          {selectedPlace.image && <PhotoCredit />}
           <div className="sheet-title-row">
             <div>
               <div className="place-name">{selectedPlace.title}</div>

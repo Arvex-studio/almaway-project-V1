@@ -133,3 +133,26 @@ for (const width of [320, 390, 1440]) {
     expect(errors).toEqual([])
   })
 }
+
+test('F1 catalogue selects the correct place and detail links back to the same map identity', async ({page}) => {
+  await page.goto('/map')
+  await page.getByRole('button', {name:/Каталог ·/}).click()
+  await page.getByRole('complementary', {name:'Места на карте'}).getByRole('button', {name:/Медео/}).click()
+  await expect(page.getByRole('region', {name:'Выбранное место'})).toContainText('Медео')
+  await page.getByRole('link', {name:'Подробнее',exact:true}).click()
+  await expect(page.getByRole('heading',{level:1})).toHaveText('Медео')
+  await page.getByRole('link',{name:'На карте',exact:true}).click()
+  await expect(page).toHaveURL(/place=medeo/)
+  await expect(page.getByRole('region', {name:'Выбранное место'})).toContainText('Медео')
+})
+
+test('interactive preview uses exact mobile and desktop iframe viewports', async ({page}) => {
+  await page.goto('/preview')
+  await expect(page.locator('iframe')).toHaveAttribute('width','390')
+  await expect(page.locator('iframe')).toHaveAttribute('height','844')
+  await page.getByRole('button',{name:'Desktop 1440 × 900'}).click()
+  await expect(page.locator('iframe')).toHaveAttribute('width','1440')
+  await expect(page.locator('iframe')).toHaveAttribute('height','900')
+  await page.frameLocator('iframe').getByRole('navigation').getByRole('link',{name:'План',exact:true}).click()
+  await expect(page.frameLocator('iframe').getByRole('button',{name:'Показать демо-план'})).toBeVisible()
+})

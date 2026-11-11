@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { PhotoCredit } from '@/components/editorial'
 import { Bookmark, ChevronRight, Map, Route } from 'lucide-react'
 import { AppShell } from '@/components/almaway'
 import { useDemoSaved } from '@/components/demo-state'
@@ -44,7 +45,7 @@ export default function SavedPage() {
         {tab === 'Места' && places.length > 0 ? (
           places.map((place) => (
             <article key={place.slug} className="saved-card">
-              <div
+              <figure><div
                 className="saved-image"
                 style={{
                   backgroundImage: place.image
@@ -52,7 +53,7 @@ export default function SavedPage() {
                     : undefined,
                 }}
               />
-              <div>
+              <PhotoCredit /></figure><div>
                 <span className="eyebrow">{place.region}</span>
                 <h2>{place.title}</h2>
                 <p>Параметры маршрута уточняются.</p>

@@ -14,7 +14,7 @@ export const place = {
   title: 'Большое Алматинское озеро',
   region: 'Заилийский Алатау',
   distance: '28 км',
-  image: 'https://images.unsplash.com/photo-1752583649031-a8a8cc17fb7d?auto=format&fit=crop&w=1400&q=85',
+  image: '/images/bao.webp',
   why: 'Бирюзовая вода, хвойные склоны и горный воздух — идеальный первый маршрут из Алматы.',
   description: 'Высокогорное озеро цвета неба — одно из тех мест, ради которых хочется выйти из дома пораньше.',
   metrics: [
