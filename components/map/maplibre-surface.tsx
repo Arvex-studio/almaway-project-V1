@@ -103,6 +103,17 @@ export default function MapLibreSurface(props: MapSurfaceProps & { ref?: Ref<Map
         layout: { 'line-cap': 'round', 'line-join': 'round', visibility: current.current.showRoutes === false ? 'none' : 'visible' },
         paint: { 'line-color': '#2f7d5b', 'line-width': 4, 'line-opacity': 0.85 },
       })
+      // Keep catalogue pins inside the usable viewport, including short phones.
+      // Geographic points are not route entrances or navigation instructions.
+      const points = current.current.places.map(place => place.coordinates)
+      if (points.length) {
+        const longitudes = points.map(point => point[0])
+        const latitudes = points.map(point => point[1])
+        map.fitBounds([
+          [Math.min(...longitudes), Math.min(...latitudes)],
+          [Math.max(...longitudes), Math.max(...latitudes)],
+        ], { padding: { top: 145, bottom: 145, left: 55, right: 55 }, maxZoom: 10.2, duration: 0 })
+      }
       readyRef.current = true
       setStatus('ready')
       current.current.onReadyChange?.(true)
