@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "pnpm@10.34.3",
   "scripts": {
-    "dev": "node scripts/prepare-maplibre.mjs && next dev --hostname 0.0.0.0 --port ${PORT:-3000}",
+    "dev": "node scripts/prepare-maplibre.mjs && next dev --hostname 0.0.0.0",
     "build": "node scripts/prepare-maplibre.mjs && next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
