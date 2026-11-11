@@ -16,7 +16,7 @@ export default function Preview() {
           flexWrap: 'wrap',
         }}
       >
-        <strong>AlmaWay F1 / Interactive preview</strong>
+        <strong>AlmaWay F2 / Interactive preview</strong>
         {['mobile', 'desktop'].map((x) => (
           <button
             key={x}

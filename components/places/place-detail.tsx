@@ -1,18 +1,18 @@
-'use client'
-import Link from 'next/link'
-import { ArrowLeft, ArrowUpRight, MapPin } from 'lucide-react'
-import { AppShell } from '@/components/almaway'
-import { SaveButton } from '@/components/demo-state'
-import { PhotoCredit } from '@/components/editorial'
-import { place as lake, type PlaceDetails } from '@/lib/almaway-data'
-import { getTouristPlace } from '@/lib/tourist-places'
+"use client";
+import Link from "next/link";
+import { ArrowLeft, ArrowUpRight, MapPin } from "lucide-react";
+import { AppShell } from "@/components/almaway";
+import { SaveButton } from "@/components/demo-state";
+import { PhotoCredit } from "@/components/editorial";
+import { place as lake, type PlaceDetails } from "@/lib/almaway-data";
+import { getTouristPlace } from "@/lib/tourist-places";
 export default function PlaceDetail({
   place = lake,
 }: {
-  place?: PlaceDetails
+  place?: PlaceDetails;
 }) {
-  const record = getTouristPlace(place.slug)
-  const isLake = place.slug === lake.slug
+  const record = getTouristPlace(place.slug);
+  const isLake = place.slug === lake.slug;
   return (
     <AppShell className="detail-shell">
       <main className="atlas-detail">
@@ -20,7 +20,7 @@ export default function PlaceDetail({
           <Link href="/explore">
             <ArrowLeft /> Все открытия
           </Link>
-          <span>АТЛАС / {record?.category || 'МЕСТО'}</span>
+          <span>АТЛАС / {record?.category || "МЕСТО"}</span>
         </div>
         <header className="atlas-detail-title">
           <span className="eyebrow">{place.region}</span>
@@ -28,14 +28,18 @@ export default function PlaceDetail({
         </header>
         <div className="atlas-detail-layout">
           <figure className="atlas-detail-photo">
-            {isLake ? (
+            {isLake || place.slug === "medeo" ? (
               <>
                 <img
-                  src="/images/bao.webp"
-                  alt="Большое Алматинское озеро в окружении снежных гор"
+                  src={isLake ? "/images/bao.webp" : "/images/medeo.webp"}
+                  alt={
+                    isLake
+                      ? "Большое Алматинское озеро в окружении снежных гор"
+                      : "Медео, вид на спортивный комплекс"
+                  }
                   fetchPriority="high"
                 />
-                <PhotoCredit />
+                <PhotoCredit photo={isLake ? "bao" : "medeo"} />
               </>
             ) : (
               <div className="atlas-no-photo">
@@ -45,11 +49,6 @@ export default function PlaceDetail({
             )}
           </figure>
           <div className="atlas-place-story">
-            <span className="eyebrow">ПОЛЕВЫЕ ЗАМЕТКИ</span>
-            <h2>
-              {isLake ? 'Место, чтобы остановиться.' : 'Открой для себя.'}
-            </h2>
-            <p className="atlas-lead">{place.description}</p>
             <div className="card-actions">
               <SaveButton slug={place.slug} title={place.title} />
               <Link
@@ -62,6 +61,12 @@ export default function PlaceDetail({
             <p className="demo-notice">
               Сохранения — только в текущей сессии. Аккаунт не подключён.
             </p>
+
+            <span className="eyebrow">ПОЛЕВЫЕ ЗАМЕТКИ</span>
+            <h2>
+              {isLake ? "Место, чтобы остановиться." : "Открой для себя."}
+            </h2>
+            <p className="atlas-lead">{place.description}</p>
             <section className="atlas-facts">
               <h2>Перед поездкой</h2>
               <p>
@@ -76,7 +81,7 @@ export default function PlaceDetail({
                 </div>
                 <div>
                   <dt>Тип места</dt>
-                  <dd>{record?.category || 'Уточняется'}</dd>
+                  <dd>{record?.category || "Уточняется"}</dd>
                 </div>
                 <div>
                   <dt>Маршрутные данные</dt>
@@ -86,7 +91,7 @@ export default function PlaceDetail({
             </section>
             {record && (
               <p className="atlas-source">
-                Географический объект:{' '}
+                Географический объект:{" "}
                 <a
                   href={record.coordinateSource.url}
                   target="_blank"
@@ -98,6 +103,14 @@ export default function PlaceDetail({
                 маршрут.
               </p>
             )}
+            <Link
+              className="place-journal"
+              href={`/journal?place=${place.slug}`}
+            >
+              <span className="eyebrow">ПОЛЕВОЙ ЖУРНАЛ · ДЕМО</span>
+              <h2>За кадром места</h2>
+              <p>Посмотреть формат историй или создать свою заметку →</p>
+            </Link>
             <Link className="atlas-text-link" href="/plan">
               Посмотреть демо планировщика <ArrowUpRight />
             </Link>
@@ -105,5 +118,5 @@ export default function PlaceDetail({
         </div>
       </main>
     </AppShell>
-  )
+  );
 }

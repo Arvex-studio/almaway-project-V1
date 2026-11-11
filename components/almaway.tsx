@@ -1,9 +1,10 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { Masthead, PhotoCredit } from '@/components/editorial'
-import { usePathname } from 'next/navigation'
+import Link from "next/link";
+import { Masthead, PhotoCredit } from "@/components/editorial";
+import { usePathname } from "next/navigation";
 import {
+  BookOpen,
   Bookmark,
   Car,
   ChevronRight,
@@ -20,49 +21,49 @@ import {
   ShieldCheck,
   Sparkles,
   UserRound,
-} from 'lucide-react'
-import { SaveButton } from '@/components/demo-state'
-import { DemoAction } from '@/components/future/demo-dialog'
-import { place, type PlaceDetails } from '@/lib/almaway-data'
+} from "lucide-react";
+import { SaveButton } from "@/components/demo-state";
+import { DemoAction } from "@/components/future/demo-dialog";
+import { place, type PlaceDetails } from "@/lib/almaway-data";
 
 const navItems = [
-  { href: '/explore', label: 'Открытия', icon: Compass },
-  { href: '/plan', label: 'План', icon: Sparkles },
-  { href: '/map', label: 'Карта', icon: Map },
-  { href: '/saved', label: 'Сохранено', icon: Bookmark },
-  { href: '/profile', label: 'Профиль', icon: UserRound },
-]
+  { href: "/explore", label: "Открытия", icon: Compass },
+  { href: "/journal", label: "Журнал", icon: BookOpen },
+  { href: "/map", label: "Карта", icon: Map },
+  { href: "/saved", label: "Сохранено", icon: Bookmark },
+  { href: "/profile", label: "Профиль", icon: UserRound },
+];
 
 export function BottomNav() {
-  const pathname = usePathname()
+  const pathname = usePathname();
   return (
     <nav className="bottom-nav" aria-label="Основная навигация">
       {navItems.map(({ href, label, icon: Icon }) => {
-        const active = pathname === href || pathname.startsWith(`${href}/`)
+        const active = pathname === href || pathname.startsWith(`${href}/`);
         return (
           <Link
             key={href}
             href={href}
-            aria-current={active ? 'page' : undefined}
-            className={`nav-item ${active ? 'active' : ''} ${href === '/map' ? 'map-tab' : ''}`}
+            aria-current={active ? "page" : undefined}
+            className={`nav-item ${active ? "active" : ""} ${href === "/map" ? "map-tab" : ""}`}
           >
             <span className="nav-icon">
               <Icon />
             </span>
             <span>{label}</span>
           </Link>
-        )
+        );
       })}
     </nav>
-  )
+  );
 }
 
 export function AppShell({
   children,
-  className = '',
+  className = "",
 }: {
-  children: React.ReactNode
-  className?: string
+  children: React.ReactNode;
+  className?: string;
 }) {
   return (
     <div className="app-shell">
@@ -72,7 +73,7 @@ export function AppShell({
         <BottomNav />
       </div>
     </div>
-  )
+  );
 }
 export function SearchBar() {
   return (
@@ -81,48 +82,48 @@ export function SearchBar() {
       <span>Открыть каталог мест</span>
       <ChevronRight />
     </Link>
-  )
+  );
 }
 export function FilterChip({
   children,
   active,
   onClick,
 }: {
-  children: React.ReactNode
-  active?: boolean
-  onClick?: () => void
+  children: React.ReactNode;
+  active?: boolean;
+  onClick?: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-pressed={Boolean(active)}
-      className={`filter-chip ${active ? 'active' : ''}`}
+      className={`filter-chip ${active ? "active" : ""}`}
     >
       {children}
     </button>
-  )
+  );
 }
 
 export function MapPin({
-  className = '',
+  className = "",
   selected,
   saved,
   routePoint,
   onClick,
 }: {
-  className?: string
-  selected?: boolean
-  saved?: boolean
-  routePoint?: boolean
-  onClick?: () => void
+  className?: string;
+  selected?: boolean;
+  saved?: boolean;
+  routePoint?: boolean;
+  onClick?: () => void;
 }) {
   return (
     <button
       type="button"
       aria-label="Открыть место"
       onClick={onClick}
-      className={`map-pin ${className} ${selected ? 'selected' : ''} ${saved ? 'saved' : ''} ${routePoint ? 'route-point' : ''}`}
+      className={`map-pin ${className} ${selected ? "selected" : ""} ${saved ? "saved" : ""} ${routePoint ? "route-point" : ""}`}
     >
       <span>
         {saved ? (
@@ -136,14 +137,14 @@ export function MapPin({
         )}
       </span>
     </button>
-  )
+  );
 }
 export function ClusterPin({
   count,
   onClick,
 }: {
-  count: number
-  onClick?: () => void
+  count: number;
+  onClick?: () => void;
 }) {
   return (
     <button
@@ -154,7 +155,7 @@ export function ClusterPin({
     >
       {count}
     </button>
-  )
+  );
 }
 export function MapControls({
   onLocate,
@@ -162,13 +163,13 @@ export function MapControls({
   locationDisabled = false,
   raised = false,
 }: {
-  onLocate: () => void
-  onLayers: () => void
-  locationDisabled?: boolean
-  raised?: boolean
+  onLocate: () => void;
+  onLayers: () => void;
+  locationDisabled?: boolean;
+  raised?: boolean;
 }) {
   return (
-    <div className={`map-controls ${raised ? 'raised' : ''}`}>
+    <div className={`map-controls ${raised ? "raised" : ""}`}>
       <button type="button" aria-label="Слои карты" onClick={onLayers}>
         <MapPinned />
       </button>
@@ -181,19 +182,19 @@ export function MapControls({
         <LocateFixed />
       </button>
     </div>
-  )
+  );
 }
 
-export { MapSurface } from '@/components/map/map-surface'
+export { MapSurface } from "@/components/map/map-surface";
 
 export function MetricItem({
   icon: Icon,
   label,
   value,
 }: {
-  icon: typeof Mountain
-  label: string
-  value: string
+  icon: typeof Mountain;
+  label: string;
+  value: string;
 }) {
   return (
     <div className="metric-chip">
@@ -203,42 +204,45 @@ export function MetricItem({
         <strong>{value}</strong>
       </div>
     </div>
-  )
+  );
 }
 export function PrimaryButton({
   children,
   onClick,
 }: {
-  children: React.ReactNode
-  onClick?: () => void
+  children: React.ReactNode;
+  onClick?: () => void;
 }) {
   return (
     <button type="button" className="primary-button" onClick={onClick}>
       {children}
     </button>
-  )
+  );
 }
 export function SecondaryButton({
   children,
   onClick,
 }: {
-  children: React.ReactNode
-  onClick?: () => void
+  children: React.ReactNode;
+  onClick?: () => void;
 }) {
   return (
     <button type="button" className="secondary-button" onClick={onClick}>
       {children}
     </button>
-  )
+  );
 }
 
 export function PlacePreviewSheet({
   onClose,
   selectedPlace = place,
 }: {
-  onClose: () => void
-  selectedPlace?: PlaceDetails
+  onClose: () => void;
+  selectedPlace?: PlaceDetails;
 }) {
+  const photo =
+    selectedPlace.image ||
+    (selectedPlace.slug === "medeo" ? "/images/medeo.webp" : undefined);
   return (
     <section className="place-sheet" aria-label="Выбранное место">
       <button
@@ -251,15 +255,19 @@ export function PlacePreviewSheet({
         <div
           className="sheet-photo"
           style={{
-            backgroundImage: selectedPlace.image
-              ? `url(${selectedPlace.image})`
-              : undefined,
+            backgroundImage: photo ? `url(${photo})` : undefined,
           }}
         >
-          <span className="photo-tag">{selectedPlace.image ? 'Фото места' : 'Фото готовится'}</span>
+          <span className="photo-tag">
+            {photo ? "Фото места" : "Фото готовится"}
+          </span>
         </div>
         <div className="sheet-info">
-          {selectedPlace.image && <PhotoCredit />}
+          {photo && (
+            <PhotoCredit
+              photo={selectedPlace.slug === "medeo" ? "medeo" : "bao"}
+            />
+          )}
           <div className="sheet-title-row">
             <div>
               <div className="place-name">{selectedPlace.title}</div>
@@ -292,7 +300,7 @@ export function PlacePreviewSheet({
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 export function InfoSection({
@@ -300,9 +308,9 @@ export function InfoSection({
   title,
   children,
 }: {
-  icon: typeof Route
-  title: string
-  children: React.ReactNode
+  icon: typeof Route;
+  title: string;
+  children: React.ReactNode;
 }) {
   return (
     <section className="info-section">
@@ -317,15 +325,15 @@ export function InfoSection({
         className="inline-link"
         title={title}
         description={
-          typeof children === 'string'
+          typeof children === "string"
             ? children
-            : 'Подробности маршрута появятся в следующей версии.'
+            : "Подробности маршрута появятся в следующей версии."
         }
       >
         Подробнее <ChevronRight />
       </DemoAction>
     </section>
-  )
+  );
 }
 export const detailIcons = {
   difficulty: Mountain,
@@ -335,7 +343,7 @@ export const detailIcons = {
   access: Car,
   safety: ShieldCheck,
   take: Bookmark,
-}
+};
 export {
   Bookmark,
   Car,
@@ -351,4 +359,4 @@ export {
   ShieldCheck,
   Sparkles,
   UserRound,
-}
+};

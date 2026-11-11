@@ -12,13 +12,14 @@ const fixtureStyle = {
   ],
 }
 
-test('missing key preserves navigation and gives a safe map fallback', async ({
+test('missing key uses the keyless provider with the real map engine', async ({
   page,
 }, info) => {
   test.skip(info.project.name !== 'missing-key')
+  await page.route('https://tiles.openfreemap.org/styles/liberty', route => route.fulfill({json: fixtureStyle}))
   await page.goto('/map')
-  await expect(page.getByRole('status')).toContainText('Карта пока недоступна')
-  await expect(page.locator('.maplibregl-canvas')).toHaveCount(0)
+  await expect(page.locator('.maplibregl-canvas')).toBeVisible()
+  await expect(page.locator('.almaway-marker').first()).toBeVisible()
   await page
     .getByRole('navigation')
     .getByRole('link', { name: 'Открытия', exact: true })
@@ -174,14 +175,14 @@ test.describe('real MapLibre engine with a controlled style response', () => {
     await page.goto('/map')
     const canvas = page.locator('.maplibregl-canvas')
     await expect(page.locator('.almaway-marker').first()).toBeVisible()
-    const withRoute = await canvas.screenshot()
+    const withoutRoute = await canvas.screenshot()
     await page.getByRole('button', { name: 'Слои карты', exact: true }).click()
     await page
       .getByRole('checkbox', { name: 'Маршруты (демо)', exact: true })
-      .uncheck()
+      .check()
     await page.getByRole('button', { name: 'Понятно', exact: true }).click()
     await expect
-      .poll(async () => Buffer.compare(withRoute, await canvas.screenshot()))
+      .poll(async () => Buffer.compare(withoutRoute, await canvas.screenshot()))
       .not.toBe(0)
     await page
       .getByRole('button', { name: 'Моё местоположение', exact: true })

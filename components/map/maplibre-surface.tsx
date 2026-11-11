@@ -31,7 +31,7 @@ export default function MapLibreSurface(props: MapSurfaceProps & { ref?: Ref<Map
   const markersRef = useRef<ReturnType<typeof createMarkerRenderer> | null>(null)
   const locationRef = useRef<Marker | null>(null)
   const readyRef = useRef(false)
-  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>(key ? 'loading' : 'error')
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [notice, setNotice] = useState('')
   const [attempt, setAttempt] = useState(0)
   // Event handlers use current props without reinitializing the map.
@@ -61,7 +61,7 @@ export default function MapLibreSurface(props: MapSurfaceProps & { ref?: Ref<Map
   }), [])
 
   useEffect(() => {
-    if (!container.current || !key) return
+    if (!container.current) return
     let disposed = false
     let map: LibreMap
     setStatus('loading')
@@ -69,7 +69,7 @@ export default function MapLibreSurface(props: MapSurfaceProps & { ref?: Ref<Map
     try {
       map = new LibreMap({
         container: container.current,
-        style: `https://api.maptiler.com/maps/outdoor-v2/style.json?key=${encodeURIComponent(key)}`,
+        style: key ? `https://api.maptiler.com/maps/outdoor-v2/style.json?key=${encodeURIComponent(key)}` : 'https://tiles.openfreemap.org/styles/liberty',
         ...initialView,
         minZoom: 3, maxZoom: 18,
         renderWorldCopies: false,
@@ -80,7 +80,7 @@ export default function MapLibreSurface(props: MapSurfaceProps & { ref?: Ref<Map
       return
     }
     mapRef.current = map
-    map.addControl(new AttributionControl({ compact: true, customAttribution: '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a>' }), 'bottom-left')
+    map.addControl(new AttributionControl({ compact: true, customAttribution: key ? '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a>' : undefined }), 'bottom-left')
     const markers = createMarkerRenderer(map, () => current.current)
     markersRef.current = markers
     const onLoad = () => {
@@ -177,7 +177,7 @@ export default function MapLibreSurface(props: MapSurfaceProps & { ref?: Ref<Map
   return <div className="map-canvas real-map" role="region" aria-label="Туристическая карта Алматинского региона">
     <div ref={container} className="map-engine" />
     {status !== 'ready' && <div className="map-message" role="status" aria-live="polite">
-      {status === 'loading' ? <strong>Загружаем карту…</strong> : <><strong>Карта пока недоступна</strong><p>Открой Открытия, чтобы посмотреть места.</p>{key && <button type="button" className="secondary-button" onClick={() => setAttempt(value => value + 1)}>Повторить</button>}<Link href="/explore" className="secondary-button">Открытия</Link></>}
+      {status === 'loading' ? <strong>Загружаем карту…</strong> : <><strong>Карта пока недоступна</strong><p>Открой Открытия, чтобы посмотреть места.</p><button type="button" className="secondary-button" onClick={() => setAttempt(value => value + 1)}>Повторить</button><Link href="/explore" className="secondary-button">Открытия</Link></>}
     </div>}
     {notice && status === 'ready' && <div className="map-notice" role="status">{notice}<button type="button" aria-label="Закрыть сообщение" onClick={() => setNotice('')}>×</button></div>}
   </div>

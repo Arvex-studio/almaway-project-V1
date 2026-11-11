@@ -1,5 +1,5 @@
-import Link from 'next/link'
-import { Mountain, ArrowUpRight } from 'lucide-react'
+import Link from "next/link";
+import { Mountain, ArrowUpRight } from "lucide-react";
 export function Masthead() {
   return (
     <header className="atlas-masthead">
@@ -11,9 +11,22 @@ export function Masthead() {
         <ArrowUpRight />
       </Link>
     </header>
-  )
+  );
 }
-export function PhotoCredit() {
+export function PhotoCredit({ photo = "bao" }: { photo?: "bao" | "medeo" }) {
+  if (photo === "medeo")
+    return (
+      <figcaption className="photo-credit">
+        <a
+          href="https://commons.wikimedia.org/wiki/File:Medeu.jpg"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Фото: Bathilda / Wikimedia Commons · Public domain
+        </a>{" "}
+        · кадрирование
+      </figcaption>
+    );
   return (
     <figcaption className="photo-credit">
       <a
@@ -22,16 +35,16 @@ export function PhotoCredit() {
         rel="noreferrer"
       >
         Фото: Amarkiev / Wikimedia Commons
-      </a>{' '}
-      ·{' '}
+      </a>{" "}
+      ·{" "}
       <a
         href="https://creativecommons.org/licenses/by-sa/4.0/"
         target="_blank"
         rel="noreferrer"
       >
         CC BY-SA 4.0
-      </a>{' '}
+      </a>{" "}
       · кадрирование
     </figcaption>
-  )
+  );
 }

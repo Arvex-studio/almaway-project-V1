@@ -41,7 +41,7 @@ export default function MapHome() {
   const [ready, setReady] = useState(false)
   const [layersOpen, setLayersOpen] = useState(false)
   const [showPlaces, setShowPlaces] = useState(true)
-  const [showRoutes, setShowRoutes] = useState(true)
+  const [showRoutes, setShowRoutes] = useState(false)
   const { savedSlugs } = useDemoSaved()
   const places = useMemo(
     () => filterTouristPlaces(activeFilter),
@@ -94,11 +94,9 @@ export default function MapHome() {
           aria-label="Места на карте"
         >
           <h1>
-            Твоя точка
-            <br />
-            отправления.
+            Места рядом с Алматы
           </h1>
-          <p>Выбери место. Найди свой путь.</p>
+          <p>Выбери точку, чтобы узнать о месте.</p>
           {places.map((item, index) => (
             <button
               key={item.slug}
