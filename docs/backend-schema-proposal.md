@@ -1,7 +1,7 @@
 # Phase 2B-1 — минимальная схема: проект, не migration
 
-**Предложение. Ничего из SQL ниже не исполнялось.** Supabase AlmaWay недоступен,
-поэтому существование и совместимость объектов не проверены. Не копировать этот документ
+**Предложение. Ничего из SQL ниже не исполнялось.** AlmaWay идентифицирован через
+`AlmawayV1`, но его БД недоступна при статусе `INACTIVE`; совместимость объектов не проверена. Не копировать этот документ
 на hosted БД: сначала [read-only аудит](backend-contract.md#5-требуемый-доступ-к-almaway-и-следующий-read-only-аудит)
 и [migration plan](backend-migration-plan.md). Это design artifact в Markdown;
 `supabase/migrations/` в Phase 2B-1 не создаётся.
@@ -11,8 +11,8 @@
 | Таблица | Владелец данных | Назначение |
 | --- | --- | --- |
 | `profiles` | Один постоянный Auth user, `id = auth.users.id` | Приватные display name, hometown, bio |
-| `places` | Редакция AlmaWay; нет user owner | Пять мест, stable UUID + slug, координаты, public content, статус публикации |
-| `place_sources` | Редакция AlmaWay | По одному authoritative source каждого kind на место; несколько kinds |
+| `places` | Редакция AlmaWay; нет user owner | Расширяемый каталог, stable UUID + slug, точный category code, координаты, public content, статус публикации |
+| `place_sources` | Редакция AlmaWay | Несколько независимых citations одного kind/field на место, с собственной атрибуцией |
 | `saved_places` | Auth user, `user_id = auth.uid()` | Many-to-many relation, без копирования текста места |
 
 Email/password/provider identities остаются в Supabase Auth и не дублируются в `profiles`.
@@ -44,8 +44,8 @@ create table public.places (
   region text not null check (char_length(btrim(region)) between 1 and 160),
   description text not null check (char_length(btrim(description)) between 1 and 4000),
   why text not null check (char_length(btrim(why)) between 1 and 2000),
-  category text not null check (category in
-    ('lake', 'sports_complex', 'mountain', 'waterfall', 'peak')),
+  category text not null check (
+    char_length(category) <= 64 and category ~ '^[a-z][a-z0-9]*(_[a-z0-9]+)*$'),
   latitude double precision not null check (latitude between -90 and 90),
   longitude double precision not null check (longitude between -180 and 180),
   tags text[] not null default '{}' check (
@@ -58,23 +58,31 @@ create table public.places (
 );
 
 create table public.place_sources (
+  id uuid primary key default gen_random_uuid(),
   place_id uuid not null references public.places(id) on delete cascade,
   kind text not null check (kind in ('coordinates', 'content', 'image')),
+  field_key text not null check (
+    char_length(field_key) <= 64 and field_key ~ '^[a-z][a-z0-9]*(_[a-z0-9]+)*$'),
   provider text not null check (char_length(btrim(provider)) between 1 and 100),
   source_url text not null check (
-    source_url like 'https://%' and char_length(source_url) <= 2048),
+    source_url like 'https://%' and octet_length(source_url) <= 2048),
   retrieved_at date not null,
+  is_primary boolean not null default false,
   method text,
   feature text,
   attribution text not null check (char_length(btrim(attribution)) between 1 and 1000),
   license text not null check (char_length(btrim(license)) between 1 and 200),
-  primary key (place_id, kind),
+  unique (place_id, kind, field_key, source_url, retrieved_at),
   check (kind <> 'coordinates' or (
-    provider = 'OpenStreetMap'
-    and method is not null and method in ('node', 'bounding-box-center')
+    field_key = 'coordinates'
+    and method is not null and char_length(btrim(method)) between 1 and 100
     and feature is not null and char_length(btrim(feature)) between 1 and 1000
   ))
 );
+
+-- Максимум один выбранный источник для конкретного kind/field, остальные сохраняются.
+create unique index place_sources_primary_idx
+  on public.place_sources (place_id, kind, field_key) where is_primary;
 
 create table public.saved_places (
   user_id uuid not null references auth.users(id) on delete cascade,
@@ -92,18 +100,73 @@ create index saved_places_place_idx on public.saved_places (place_id);
 
 `gen_random_uuid()` — встроенная возможность современных Supabase Postgres; actual version
 подлежит аудиту, никаких extensions устанавливать ради этого проекта не предполагается.
-FK `place_sources.place_id` покрыт первым столбцом composite PK. Каталогу из пяти мест
+FK `place_sources.place_id` покрыт первым столбцом dedup UNIQUE index. Небольшому каталогу
 не нужны GIN tags, spatial index и speculative performance indexes. На росте проверять EXPLAIN.
 `created_at` задаётся БД и недоступен для записи обычному клиенту. `updated_at` и его trigger
 не вводятся без потребителя; это минимизирует функции и privilege surface.
+
+### Категории без закрытого enum
+
+`category` — стабильный точный snake_case код, а не UI chip и не разрешение на публикацию.
+CHECK проверяет только формат/длину. Добавление нового кода не требует DDL; новая категория
+проходит editorial review и добавляется в версионируемый adapter mapping. Не сводить
+`summit` к `mountain`, `lake_group` к `lake` или `national_park` к «Горы» в хранилище.
+Существующие `peak`/`mountain` допустимы как отдельные legacy codes; автоматически
+переписывать их нельзя. Прямой импорт исследовательского snake_case кода сохраняет его
+побайтно. Для внешнего формата/синонима нужен явный reviewed mapping и исходное значение
+в import manifest, не эвристика slugify/перевода.
+
+Конкретные RU labels и отношение к текущему UI заданы в
+[контракте категорий](backend-contract.md#категории-и-преобразование-в-ui).
+Незнакомый корректный код сохраняется, label по умолчанию равен коду, category-derived
+filters пусты; это не делает строку unpublished автоматически и не выдумывает её свойства.
+Для production publication желателен reviewed RU label. Не создавать fifth taxonomy table
+или ENUM только ради текущих категорий.
+
+### Несколько источников и дедупликация
+
+Одна строка — citation конкретного поля, не «все сведения о месте из одного provider».
+`kind` — широкий тип (`coordinates`, `content`, `image`); `field_key` — точный snake_case
+ключ поддерживаемого поля, например `coordinates`, `description`, `category`, `image_url`.
+Несколько ссылок одного kind/field различаются URL; один URL может обосновывать разные
+поля и поэтому иметь отдельные строки. `id` даёт стабильную identity независимо от
+редактирования citation. `retrieved_at` в dedup key сохраняет отдельные датированные
+снимки источника, не перезаписывая старый при повторной проверке.
+
+- Dedup identity: `(place_id, kind, field_key, source_url, retrieved_at)`. Все её части
+  NOT NULL; URL ≤ 2048 **байт**, ASCII field key ≤ 64, чтобы composite B-tree key не
+  превышал допустимый размер из-за многобайтных URL. В будущем local replay проверяет boundary.
+- Canonical URL: parse HTTPS, lowercase host, убрать default port. Path case, trailing
+  slash, query и fragment (включая `#page=` у PDF) сохраняются; не вырезать query/fragment
+  или объединять разные документы по домену. Raw URL и mapping сохраняются в import manifest.
+- Повтор exact citation с теми же metadata → существующий `id`, без новой строки.
+  При совпадении dedup key и различии attribution/license/provider/method/feature —
+  конфликт на review, не `ON CONFLICT DO UPDATE` и не молчаливое `DO NOTHING`.
+  До разрешения сохранить оба input records в manifest и не объявлять импорт завершённым.
+- Attribution/license хранятся **на каждой citation**, не на месте или provider. Не терять
+  их при агрегации; неизвестные обязательные metadata отмечаются в manifest для review,
+  не заполняются вымышленной лицензией. Raw research pack остаётся неизменным.
+- `is_primary` выбирается редакционно, не по порядку rows/URL и не числом цитирований.
+  Partial UNIQUE обеспечивает ≤1 primary на kind/field; publication validator требует
+  ровно один для `coordinates/coordinates`. Смена primary — один admin transaction,
+  сначала снять старый флаг; альтернативные citations не удалять.
+- Для текущего `CoordinateSource` выбранный primary должен быть `OpenStreetMap` с
+  `node` или `bounding-box-center`; остальные providers/methods можно хранить без подмены
+  под OSM. Если primary несовместим, текущий Map DTO не выдаётся до review/отдельного
+  изменения frontend contract. Общая source schema не ограничена одним provider.
+
+Дополнительные таблицы источников, polymorphic ACL, JSON metadata store и definer RPC
+для этого не нужны. Поддержка множества citations не доказывает их независимость,
+достоверность, согласие по значению поля или наличие безопасного GPS track.
 
 `tags` нормализуются как множество в admin importer. `latitude/longitude` checks исключают
 выход за диапазон, включая infinity/NaN средствами сравнений Postgres. Схема не доказывает
 точность географии. URL checks ограничивают формат; они не дают права server-side fetch.
 Если позже появится загрузчик remote media, нужны отдельные SSRF/host ограничения.
 
-Publication validator (будущая реализация/seed review) обязан проверить coordinate source,
-OSM object URL, license/attribution, соответствие метода, date и image source/права.
+Publication validator (будущая реализация/seed review) обязан проверить primary coordinate
+citation и её соответствие сохранённой точке, OSM object URL для текущего Map adapter,
+license/attribution каждой citation, метод, date и image source/права.
 Схема допускает draft без source; отсутствие child row нельзя проверить обычным CHECK.
 V1 не добавляет definer RPC/циклические FK ради публикации. Admin edits только через
 reviewed pipeline, а public adapter исключает повреждённую запись с диагностикой без PII.
@@ -238,7 +301,7 @@ frontend types и Next.js session contract. Это не runtime-проверка
 | A меняет владельца или время записи | Column grants profiles; отсутствие Saved UPDATE; USING и WITH CHECK для Profile | Явный PATCH ID/timestamp и bulk requests |
 | Гость или anonymous Auth user обращается к private таблицам | У anon нет grants; authenticated дополнительно требует signed `is_anonymous=false` | JWT с true и отсутствующим claim не получает private доступ |
 | User подставляет admin role через metadata | Нет app-admin bypass и role field; user_metadata не участвует в policies | Подмена metadata не расширяет grants; проверка existing RPC/views |
-| User читает draft по ID, slug или source | Published-only places policy; child sources проверяют опубликованного parent | Parent/source joins и прямой доступ к child table |
+| User читает draft по ID, slug или source | Published-only places policy; каждая citation проверяет опубликованного parent | Несколько sources одного поля, primary и non-primary, child ID и joins |
 | A подделывает cookie либо B получает response A | Проверенный JWT, request-scoped server client, private/no-store и отдельные cookie jars | Invalid/expired token, refresh, A→B switch, parallel SSR и stale responses |
 | Старая permissive policy или column grant расширяет доступ | Перед delta обязательный inventory; пример применим только к новым таблицам | PostgreSQL складывает permissive policies через OR; REVOKE table-level не удаляет column grants |
 | Admin публикует запись без provenance | Reviewed validator/transaction и DTO validation | Это integrity boundary, не RLS boundary: прямой Data API читает опубликованные строки без adapter |
@@ -248,6 +311,13 @@ frontend types и Next.js session contract. Это не runtime-проверка
 считать adapter защитой конфиденциальных полей или доказательством DB-инварианта.
 Все поля published places/sources должны быть публичными уже на уровне хранения.
 При вводе произвольного admin editing DB enforcement требует отдельной реализации.
+
+Category extension и новая source identity не добавляют клиентских write grants и не
+меняют owner predicates. `place_sources_read_published` по-прежнему связывает каждую
+строку через `place_id`, а не через её `id` или `is_primary`: все approved citations
+published parent публичны. Ни поле `is_primary`, ни category code не являются ACL.
+Sources для draft скрыты независимо от числа и primary flag. Публичные joins должны
+агрегировать sources как массив по place, не размножать cards, saved rows и counts.
 
 Для сессии сверены Next.js 16 `proxy.ts` и async `cookies()`: refresh в Proxy не отменяет
 проверку identity в каждом private action/handler и не заменяет RLS. Не принуждать
@@ -260,9 +330,11 @@ Secure/SameSite/path и response headers задаются по актуальн�
 ## Seed boundary
 
 Будущий explicit mapping пяти slug → UUID фиксируется в reviewed seed; значения не
-вычисляются заново на каждом deploy. Сначала draft place + coordinate source в одной
+вычисляются заново на каждом deploy. Сначала draft place + все citations в одной
 транзакции, validator, затем publish. Не seed mock users, Profile stats и Saved defaults.
 `retrieved_at` переносится из источника (`2026-09-30`), не подменяется датой импорта.
 OSM атрибуция: OpenStreetMap contributors, ODbL-1.0, соответствующий object URL.
 Нет автоматической публикации Unsplash image без review прав; нет импорта demo metrics.
 15 research guide estimates и OSM demo-route остаются вне этих seeds.
+Будущий research import расширяет этот baseline по отдельному reviewed manifest;
+пять demo places не являются ограничением каталога. Политика READY ≠ published/verified track.

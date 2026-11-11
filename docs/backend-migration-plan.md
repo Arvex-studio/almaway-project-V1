@@ -1,20 +1,23 @@
 # Phase 2B-1 — отдельный migration plan
 
-Статус: **план, не выполнен**. AlmaWay Supabase недоступен; schema, Auth, grants,
-RLS и hosted migration history неизвестны. Этот документ не разрешает hosted mutations.
+Статус: **план, не выполнен**. Через `AlmawayV1` подтверждены project
+`almaway-project-V1`, organization `Almaway-project-V1`, ref `nwmmqtyfaumuaocspsur`.
+Проект `INACTIVE`: list_tables завершился ошибкой недоступности, list_migrations — timeout.
+Schema, Auth, grants, RLS и migration history неизвестны. Документ не разрешает mutations.
 Основание: [контракт](backend-contract.md), [схема](backend-schema-proposal.md).
-Документальный security-review и frontend regression checks завершены в Phase 2B-1;
-они не заменяют выполнение будущих migrations и A/B runtime tests. Финальная проверка
-доступа: nickname `AlmawayV1` ещё не виден инструментам текущего чата, единый блокер
-и минимальное действие владельца зафиксированы в разделе 1 контракта.
+Документальный security-review и предыдущие frontend regression checks завершены в Phase 2B-1;
+они не заменяют будущие migrations и A/B runtime tests. Новый discovery снимает прежний
+OAuth-блокер. Единственное действие владельца — возобновить существующий проект в Dashboard,
+чтобы read-only аудит смог подключиться; агент не выполняет Resume/Restore.
 
 ## Порядок и точки остановки
 
-### 0. Подтвердить доступ и фактическую baseline
+### 0. Проверить доступность и фактическую baseline
 
-Владелец предоставляет project ref/organization и project-scoped read-only доступ
-к AlmaWay по инструкции в контракте. Ни Gridy, ни Qaskelen не являются substitute.
-Без этого остановиться на документах, не создавать/линковать новый проект автоматически.
+Identity проекта уже сопоставлена с historical metadata. Повторить status/connection check
+через `AlmawayV1` после восстановления доступности владельцем. Не менять ref, не создавать
+проект и не использовать Gridy/Qaskelen. До доступности БД завершаются документы/review,
+но нельзя угадывать existing-schema/history или начинать Phase 2B-2 автоматически.
 
 Снять read-only inventory: table/column definitions, constraints/indexes,
 RLS/policies/grants/default ACL, views/functions/triggers/ownership, exposed schemas,
@@ -56,12 +59,18 @@ Auth config без secrets, security advisors, migration versions/names и drift
 1. `almaway_v1_contract`: четыре таблицы, constraints, indexes, explicit grants, RLS и
    policies в **одной транзакции**. Без signup trigger, definer RPC, views, PostGIS и Auth config changes.
 2. `almaway_v1_reviewed_places`: отдельный reviewed data seed с фиксированными UUID,
-   пятью slug и coordinate provenance; публикация только после проверки, без mock metrics/images
+   исходными пятью slug и primary/alternative citations; каталог не ограничен пятью строками.
+   Research pack импортировать только отдельным approved manifest после сверки category codes
+   и всех fieldSources; READY не означает published или verified track. Публикация без mock metrics/images
    с неподтверждёнными правами. При existing data не переписывать редакционные данные upsert-ом.
 3. Generate `Database` TypeScript types из проверенной локальной схемы; clients/adapter
    foundation отдельным code diff, не подключённым к текущему demo UI.
 
 Если audit выявит existing tables, номера/содержание корректируются в delta plan до генерации.
+Если actual schema повторяет старый CHECK/PK proposal, отдельно спланировать non-destructive
+расширение category format CHECK и добавление citation id/field_key/dedup/primary indexes;
+существующие ids/slugs/attribution не переписывать, field_key и primary backfill проверять
+до NOT NULL/UNIQUE. Старые источники не считать полным набором research evidence.
 Credentials только через OAuth/локальное secret storage; никаких паролей или service-role
 значений в prompt, SQL, tests, output и Git.
 
@@ -74,8 +83,29 @@ Credentials только через OAuth/локальное secret storage; н�
 - Clean migration replay; constraints, FK и grants; generated types совпадают со schema.
 - Повторный запуск migration runner: нет pending migrations и дублей; не требовать,
   чтобы произвольный повтор CREATE SQL был idempotent.
-- Seed: ровно 5 ожидаемых slug, один coordinate source на place; совпадают координаты,
-  методы, дата, UUID mapping. Image и metrics не подменены mock claims.
+- Baseline seed: 5 исходных slug/UUID сохраняются; у каждого ровно один выбранный primary
+  coordinates/coordinates, но любое число альтернативных citations. Координаты/метод/date
+  совпадают с выбранным primary. Image и metrics не подменены mock claims.
+- Category compatibility: все 5 legacy codes и 9 дополнительных примеров review проходят
+  format CHECK без изменения кода; RU labels и tag-based Map chips проверяются отдельно.
+  Новый код не требует migration, неизвестный корректный код получает свой code как label.
+  Не присваивать filters по guessed category и не сводить lake_group к lake/summit к mountain.
+- При доступном raw research pack: зафиксировать hash/version, пересчитать 20 places/12
+  distinct categories/83 sources и reconcile с review; проверить **каждый** код и citation.
+  Pack отсутствует в данном checkout, counts review не объявлять вычисленными.
+  Для каждого input fieldSource нужен manifest outcome: отдельная citation, точный duplicate
+  с сохранённой attribution либо явный unresolved conflict. Не терять ссылки/лицензии
+  ради получения ожидаемого row count. Число rows после dedup может быть меньше 83.
+- Source identity: два разных URL для одного place/kind/field сохраняются; один URL для
+  разных fields сохраняется отдельно; одинаковый key + metadata повторно даёт тот же id;
+  конфликт attribution/license не затирается. Новый retrieved_at создаёт отдельный snapshot.
+  Проверить canonical URL с query/PDF fragment и 2048-byte границу composite index.
+- Partial UNIQUE допускает ≤1 primary на kind/field: второй primary отклоняется; смена
+  primary атомарна и не удаляет alternative sources. Missing primary блокирует Map DTO/
+  publication validator; только primary OSM с поддерживаемым method соответствует текущему UI.
+  Нельзя выбирать случайный source или терять массив citations в adapter.
+- Для многозначного join sources: одна card/один saved item на place, counts не умножаются;
+  DTO содержит точный categoryCode, UI label и весь approved sources array.
 - Public DTO соответствует MapSurface/PlaceDetails, lon/lat не перепутаны,
   неизвестный/draft slug не возвращается, filters сохраняют нынешнюю семантику.
 - A/B tests ниже через Supabase Data API с publishable key + раздельными user JWT,
@@ -112,7 +142,7 @@ Local admin credential только создаёт fixtures и проверяе�
 | Проверка | Ожидаемый результат |
 | --- | --- |
 | anon читает P/Q, detail по slug | Published DTO и public provenance; не D |
-| anon обращается напрямую к sources D по известному ID | Нет rows; не утечка через child table |
+| anon обращается к primary/alternative sources D по citation id/field_key | Нет rows; published источники P/Q доступны все, без утечки child table D |
 | anon читает/меняет profiles и saves | Нет доступа (grants deny); никаких private payload |
 | A создаёт свой profile; повторная lazy init | Одна строка; повтор не стирает профиль |
 | A читает/меняет profile B по известному UUID | SELECT пуст; UPDATE 0 rows; B не меняется |
@@ -128,7 +158,7 @@ Local admin credential только создаёт fixtures и проверяе�
 | A удаляет свой P дважды | Идемпотентный desired absent; B save остаётся |
 | A сохраняет draft D / отсутствующий UUID | Операция не создаёт row; web-boundary возвращает общий not_found |
 | Local admin снимает P с публикации после сохранения | A/B link приватно остаётся, joined place null, source скрыт; удалить свой link можно |
-| A/B пытаются писать places/sources, включая publish | Permission denied; каталог неизменен |
+| A/B пытаются писать category/places/sources/is_primary, включая publish | Permission denied; категория/число citations не меняют ACL |
 | A выставляет user_metadata.role/is_admin | Не получает никаких дополнительных прав |
 | Anonymous Auth JWT и signed JWT без is_anonymous claim | Public read допустим, profiles/saves недоступны, несмотря на authenticated role |
 | Missing/invalid JWT или expired JWT без рабочего refresh | Private server boundary отклоняет запрос; public доступ остаётся только anon |
@@ -163,6 +193,11 @@ Session/cache и UI integration assertions исполняются в фазе п
 `places`, `profiles`. Не применять DROP CASCADE и не трогать `auth`, `storage`, `realtime`
 или ранее существовавшие объекты. Удаление через новую compensating migration сохраняет
 честную историю; не удалять уже применённые migration files/remote versions.
+После записи расширенных категорий и нескольких citations нельзя откатывать к старому
+пятизначному CHECK/PK(place_id,kind) путём слияния/удаления evidence. Сначала отключить
+новый importer/client и предпочесть forward fix, сохранив расширяемую schema. Любой
+обратный DDL требует явной проверки совместимости всех codes/rows и сохранённого export;
+конфликтующие данные не удалять автоматически ради rollback.
 Если аудит обнаружит существующие таблицы, этот empty-schema rollback неприменим:
 нужен план возврата только внесённых delta, включая прежние grants/policies.
 

@@ -22,18 +22,16 @@ Phase 2B-1, не меняя hosted БД, Auth settings, deployment или сущ
 
 ## Обязательный gate проекта
 
-В 2B-1 правильный AlmaWay Supabase не был доступен. Через проверенное подключение
-отображались только Gridy-проекты; их schema не исследовалась. Состояние AlmaWay
-таблиц/Auth/RLS/history неизвестно. Не считать базу пустой.
-При финальной проверке владелец сообщил о новом nickname `AlmawayV1`, но он ещё не
-появился в разрешённых подключениях инструментов чата. Проверить его доступность заново,
-не переносить старый blocked status на новую сессию без проверки.
+В последней ревизии 2B-1 через разрешённое `AlmawayV1` подтверждён project
+`almaway-project-V1`, organization `Almaway-project-V1`, ref `nwmmqtyfaumuaocspsur`.
+Статус INACTIVE; list_tables не смог подключиться, list_migrations завершился timeout.
+OAuth identity доступна; actual schema/Auth/RLS/history остаются неизвестны, БД не считать пустой.
 
-До любых DB-related действий получи подтверждённый владельцем AlmaWay project ref,
-организацию и соответствующее Supabase OAuth/MCP подключение. Проверь совпадение
-project metadata и URL. Не используй Gridy, Qaskelen или иной проект, даже для тестирования.
-Если правильного проекта/доступа нет — остановись на конкретной инструкции подключения,
-сохрани blocked artifact и не начинай migrations/client implementation по догадке.
+Сначала повтори read-only status/connection check на этом ref. Если проект всё ещё
+недоступен, сохрани blocked artifact с одним действием владельца: возобновить существующий
+проект через Dashboard для read-only аудита. Не выполнять Resume/Restore автоматически,
+не создавать ресурсы и не пользоваться Gridy/Qaskelen/другими проектами.
+При доступной БД сверить metadata/ref/организацию заново до schema audit.
 Не запрашивай passwords, service-role keys, SMTP/OAuth secrets или tokens в чате.
 
 При наличии доступа проведи read-only аудит именно AlmaWay: schema/constraints/indexes,
@@ -55,7 +53,19 @@ migration history и drift, advisors. Сохрани evidence с ref/време�
 3. Подготовь будущие migration files штатным `supabase migration new <name>` после проверки help.
    DDL + constraints/indexes + explicit least-privilege grants + RLS policies должны быть
    одной атомарной schema migration; seed — отдельно. Никаких apply на hosted.
-4. Сохрани пять slug/стабильные UUID, longitude/latitude и source metadata из каталога.
+4. Сохрани исходные пять slug/UUID, longitude/latitude и source metadata; это baseline,
+   а не LIMIT 5. `places.category` — открытый snake_case code с format/length CHECK,
+   без пятизначного enum. Сохраняй точные research subtypes (summit/gorge/lake_group и т.д.),
+   adapter выдаёт categoryCode + RU label по таблице контракта, unknown code не теряется.
+   Map/Explore filters определяются reviewed tags, не guessed category grouping.
+   `place_sources`: UUID id, kind + field_key, много citations одного kind/field;
+   dedup `(place_id,kind,field_key,source_url,retrieved_at)`, per-citation attribution/license,
+   partial UNIQUE primary на kind/field. Проверить raw input→citation manifest, URL/query/
+   fragment, retry/conflict handling, сохранность всех attribution и alternative sources.
+   Для singular CoordinateSource выбирать только явно primary OSM citation с поддерживаемым
+   method, полный sources array сохранять; не размножать cards/counts при joins.
+   При отдельном approved research import сверить все 12 codes/20 cards/83 sources с raw
+   pack hash/version; исходный review не заменяет dataset. READY ≠ published/verified GPS track.
    Не импортируй demo distance/metrics, Profile stats, default Saved, чужую личность,
    Unsplash image без review прав или 15 published guide estimates как observed routes.
 5. `profiles` приватные, owner-only 3 editable поля, lazy init; `saved_places` unique
@@ -70,7 +80,8 @@ migration history и drift, advisors. Сохрани evidence с ref/време�
 7. Подготовь typed repository/adapter boundary и желаемое состояние save/unsave
    вместо toggle; результаты не смешивать с demo. Не подключай foundation к существующему
    UI/provider в этой фазе, не добавляй login/admin screens и Auth providers.
-8. Реально проверь migrations и A/B matrix на disposable **local Supabase** без remote
+8. Реально проверь migrations, category/source cases из migration plan и A/B matrix
+   на disposable **local Supabase** без remote
    credentials/production data. Не использовать другой hosted проект как sandbox.
    Прямые API assertions anon/A/B должны идти под public key + пользовательскими JWT,
    privileged fixture setup — отдельно. Если local tool/runtime недоступен, укажи not verified
