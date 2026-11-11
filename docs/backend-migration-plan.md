@@ -3,6 +3,10 @@
 Статус: **план, не выполнен**. AlmaWay Supabase недоступен; schema, Auth, grants,
 RLS и hosted migration history неизвестны. Этот документ не разрешает hosted mutations.
 Основание: [контракт](backend-contract.md), [схема](backend-schema-proposal.md).
+Документальный security-review и frontend regression checks завершены в Phase 2B-1;
+они не заменяют выполнение будущих migrations и A/B runtime tests. Финальная проверка
+доступа: nickname `AlmawayV1` ещё не виден инструментам текущего чата, единый блокер
+и минимальное действие владельца зафиксированы в разделе 1 контракта.
 
 ## Порядок и точки остановки
 
@@ -126,7 +130,7 @@ Local admin credential только создаёт fixtures и проверяе�
 | Local admin снимает P с публикации после сохранения | A/B link приватно остаётся, joined place null, source скрыт; удалить свой link можно |
 | A/B пытаются писать places/sources, включая publish | Permission denied; каталог неизменен |
 | A выставляет user_metadata.role/is_admin | Не получает никаких дополнительных прав |
-| Anonymous Auth JWT (если local fixture поддерживается) | Public read допустим, profiles/saves недоступны, несмотря на authenticated role |
+| Anonymous Auth JWT и signed JWT без is_anonymous claim | Public read допустим, profiles/saves недоступны, несмотря на authenticated role |
 | Missing/invalid JWT или expired JWT без рабочего refresh | Private server boundary отклоняет запрос; public доступ остаётся только anon |
 | Expired access JWT с действующим refresh cookie | Сессия того же user обновляется, cookies/cache headers передаются без утечки |
 | A sign-out → B sign-in в том же browser | Ноль профиля/saves A в state и SSR; запоздалый ответ A игнорируется |

@@ -224,6 +224,39 @@ grant означает permission error, наличие RLS без policy — о
 FORCE RLS для owner/BYPASSRLS не является заменой этой модели; privileged operator остаётся
 доверенным. Новые views/RPC в V1 не нужны и не должны обходить private policies.
 
+## Security review Phase 2B-1
+
+Выполнен статический design review DDL, grants и каждой policy, сопоставленный с
+frontend types и Next.js session contract. Это не runtime-проверка RLS: SQL не исполнялся,
+настоящие Auth users A/B не создавались. Существенных обходов ownership в предложенных
+политиках не найдено при условии новых таблиц, отсутствия дополнительных grants/policies
+и корректного Supabase Auth JWT. Эти предпосылки должны быть проверены аудитом AlmaWay.
+
+| Попытка обхода | Контроль в предложении | Что ещё проверять в Phase 2B-2 |
+| --- | --- | --- |
+| A передаёт известный UUID B в SELECT/INSERT/UPDATE/DELETE | RLS ownership на каждой private операции; ID из server session, не body | Прямые Data API вызовы без server-фильтра; affected rows и неизменность B |
+| A меняет владельца или время записи | Column grants profiles; отсутствие Saved UPDATE; USING и WITH CHECK для Profile | Явный PATCH ID/timestamp и bulk requests |
+| Гость или anonymous Auth user обращается к private таблицам | У anon нет grants; authenticated дополнительно требует signed `is_anonymous=false` | JWT с true и отсутствующим claim не получает private доступ |
+| User подставляет admin role через metadata | Нет app-admin bypass и role field; user_metadata не участвует в policies | Подмена metadata не расширяет grants; проверка existing RPC/views |
+| User читает draft по ID, slug или source | Published-only places policy; child sources проверяют опубликованного parent | Parent/source joins и прямой доступ к child table |
+| A подделывает cookie либо B получает response A | Проверенный JWT, request-scoped server client, private/no-store и отдельные cookie jars | Invalid/expired token, refresh, A→B switch, parallel SSR и stale responses |
+| Старая permissive policy или column grant расширяет доступ | Перед delta обязательный inventory; пример применим только к новым таблицам | PostgreSQL складывает permissive policies через OR; REVOKE table-level не удаляет column grants |
+| Admin публикует запись без provenance | Reviewed validator/transaction и DTO validation | Это integrity boundary, не RLS boundary: прямой Data API читает опубликованные строки без adapter |
+
+Последний пункт — осознанное ограничение минимальной схемы: provenance обязательна
+по редакционному контракту, но наличие source не обеспечено DB constraint. Нельзя
+считать adapter защитой конфиденциальных полей или доказательством DB-инварианта.
+Все поля published places/sources должны быть публичными уже на уровне хранения.
+При вводе произвольного admin editing DB enforcement требует отдельной реализации.
+
+Для сессии сверены Next.js 16 `proxy.ts` и async `cookies()`: refresh в Proxy не отменяет
+проверку identity в каждом private action/handler и не заменяет RLS. Не принуждать
+SDK cookies к HttpOnly в browser-client архитектуре без проверки совместимости:
+browser SSR client должен управлять сессией через поддерживаемый SDK механизм.
+Secure/SameSite/path и response headers задаются по актуальной документации выбранного SDK,
+а не вторым самописным token store. Logout не гарантирует мгновенный отзыв выданного JWT;
+эта граница явно описана в основном контракте.
+
 ## Seed boundary
 
 Будущий explicit mapping пяти slug → UUID фиксируется в reviewed seed; значения не

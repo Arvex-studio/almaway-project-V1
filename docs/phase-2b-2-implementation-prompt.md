@@ -25,6 +25,9 @@ Phase 2B-1, не меняя hosted БД, Auth settings, deployment или сущ
 В 2B-1 правильный AlmaWay Supabase не был доступен. Через проверенное подключение
 отображались только Gridy-проекты; их schema не исследовалась. Состояние AlmaWay
 таблиц/Auth/RLS/history неизвестно. Не считать базу пустой.
+При финальной проверке владелец сообщил о новом nickname `AlmawayV1`, но он ещё не
+появился в разрешённых подключениях инструментов чата. Проверить его доступность заново,
+не переносить старый blocked status на новую сессию без проверки.
 
 До любых DB-related действий получи подтверждённый владельцем AlmaWay project ref,
 организацию и соответствующее Supabase OAuth/MCP подключение. Проверь совпадение
@@ -46,8 +49,9 @@ migration history и drift, advisors. Сохрани evidence с ref/време�
    не ремонтируй hosted history и не удаляй старые policies без reviewed delta.
 2. Проверь актуальные Supabase docs/changelog, локальные Next.js 16 docs, CLI version/help
    и target semantics. Pin tools/dependencies; используй pnpm из проекта.
-   Установка нужных зависимостей/CLI разрешается только в scope отдельно запущенной 2B-2;
-   не переносить это разрешение назад на 2B-1. Не ставь latest без проверки совместимости.
+   Новые Supabase зависимости/CLI устанавливай только в scope отдельно запущенной 2B-2.
+   В финальной ревизии 2B-1 разрешена только чистая установка существующего lockfile для
+   проверок frontend; это не разрешает backend implementation. Не ставь latest без проверки.
 3. Подготовь будущие migration files штатным `supabase migration new <name>` после проверки help.
    DDL + constraints/indexes + explicit least-privilege grants + RLS policies должны быть
    одной атомарной schema migration; seed — отдельно. Никаких apply на hosted.

@@ -13,12 +13,27 @@ Phase 2B-0 объединена в `main`: PR [#1](https://github.com/Arvex-stud
 от проверенного `origin/main`. Прочитан корневой `AGENTS.md`; других вложенных
 `AGENTS.md` среди файлов репозитория не обнаружено.
 
+При финальной ревизии повторно проверены `origin/main` (тот же SHA), чистая локальная
+ветка и исходный doc commit `f383d1fd67cbc83c098eb19abd0c123daf81238e`.
+
 **Supabase AlmaWay недоступен в проверенном подключении.** Вызов `list_projects`
 через подключение с отображаемым именем `Supabase` вернул только `gridy-studio`
 и `gridy-studio-staging`. В их базы не выполнялись запросы. Отдельные подключения
 `Qaskelen-ecomap` не использовались. Это не доказывает отсутствие проекта AlmaWay:
 он может существовать в другой организации или быть не предоставлен этому OAuth-подключению.
 Неподтверждённый project ref не подставлялся и новый проект не создавался.
+
+При повторной проверке после сообщения владельца о подключении `AlmawayV1` этот nickname
+не появился в разрешённых `link_id` инструментов текущего чата. В них доступны только
+два подключения Qaskelen и прежнее общее `Supabase`; последнее повторно вернуло только
+Gridy-проекты. Это ограничение доступности подключения в текущей сессии, а не вывод
+о том, что AlmaWay не создан. Ни Qaskelen, ни базы Gridy не использовались.
+
+**Единственный внешний блокер:** сделать уже добавленное подключение `AlmawayV1`
+доступным инструментам этого чата с read-only доступом к целевому проекту (обновить
+OAuth/подключение в UI и передать его в чат). После появления подключения агент сам
+выполнит project discovery и аудит. Если metadata не позволит однозначно связать его
+с AlmaWay, потребуется только несекретный Dashboard URL/ref для сверки, не пароль.
 
 | Объект проверки | Подтверждено | Не установлено |
 | --- | --- | --- |
@@ -30,7 +45,9 @@ Phase 2B-0 объединена в `main`: PR [#1](https://github.com/Arvex-stud
 | Migrations | В Git нет `supabase/`, config, migrations или generated DB types | Hosted migration history и drift |
 
 Таблицы, migrations, Auth settings и deployment не изменялись; зависимости не добавлялись,
-`package.json` и lockfile не менялись. Ограничение запуска проверок описано в разделе 7.
+`package.json` и lockfile не менялись. Существующие зависимости установлены по frozen
+lockfile исключительно в disposable copy для проверок, по отдельному разрешению владельца.
+Причина исходного сбоя и результаты повторных проверок описаны в разделе 7.
 Все схемы и архитектура далее — **предложения**, а не описание существующей БД.
 
 Связанные результаты:
@@ -180,7 +197,7 @@ flowchart LR
 
 - Будущие зависимости: `@supabase/supabase-js` и `@supabase/ssr`, конкретные совместимые
   версии закрепить без `^`/`~` и обновить pnpm lockfile только в отдельно начатой реализации.
-  Старые auth-helpers не нужны. В этом этапе зависимости не устанавливались.
+  Старые auth-helpers не нужны. Supabase пакеты в этом этапе не устанавливались.
 - `lib/supabase/client.ts`: `createBrowserClient<Database>` из `@supabase/ssr`,
   browser singleton допустим в пределах одного browser context. Не хранить вторую копию
   JWT/session вручную в localStorage и не делать отдельный самописный cookie store.
@@ -211,6 +228,9 @@ flowchart LR
 - После sign-out очистить client caches и refresh server tree. Для чувствительных
   операций помнить: уже выданный access JWT живёт до expiry; удаление user или смена claims
   не гарантирует немедленное аннулирование JWT. Account deletion не входит в V1 API.
+  `getClaims()` не проверяет server-side отзыв сессии. Если требуется более свежая проверка
+  Auth user, использовать `getUser()`; строгий немедленный запрет уже выданного токена
+  для прямого Data API требует отдельной revocation/session-aware RLS модели.
 
 Планируемые env: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
 В существующем `.env.example` есть только legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY`
@@ -274,23 +294,48 @@ project ref должны принадлежать одному подтверж�
 
 ## 7. Проверка данного artifact
 
-В diff только четыре Markdown-документа в `docs/`; executable migration files не созданы.
-Schema/RLS ниже представлены в code fences и не исполнялись. Runtime/frontend и lockfile
-не менялись. Прямой `pnpm install --frozen-lockfile` запрещён условиями этапа и не запускался.
-Однако имеющийся pnpm 11.19.0 при `pnpm build` автоматически вызвал install-check/install:
-он прервался с `ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY`. Установка не завершилась;
-никакие retry с `CI=true`, purge или разрешением install не выполнялись.
+Финальная проверка: Node **22.23.4**, pnpm **10.34.3**, Linux, системный Chromium.
+Node получен из официального `latest-v22.x`, SHA-256 архива сверена с официальным
+`SHASUMS256.txt`. Инструменты установлены во временный каталог вне repo, без смены
+системного Node и без добавления инструментов в зависимости приложения.
 
-Среда имеет Node 24.19.0 и pnpm 11.19.0, тогда как проект фиксирует Node 22 и pnpm 10.34.3.
-Повторная проверка напрямую через уже доступные пакеты, без package manager:
+### Причина прежнего сбоя и исправление среды
 
-| Проверка | Результат |
+Первоначальная среда имела Node 24.19.0, pnpm 11.19.0 и неполный/несогласованный
+`node_modules`: не находились `maplibre-gl`, GeoJSON types и Playwright.
+В установленном pnpm 11 проверен `verify-deps-before-run` default `install` и ветка
+`runDepsStatusCheck`: `pnpm build` автоматически вызвал install. Тот запросил очистку
+имеющегося modules directory и завершился с `ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY`.
+Изначальная прямая проверка лишь подтвердила отсутствие нужных пакетов.
+
+В финальной ревизии владелец отдельно разрешил чистую установку. Создана disposable
+копия tracked tree через `git archive` без старого `node_modules` и без ignored env files.
+Установка выполнена точной версией pnpm проекта; не потребовались изменение lockfile,
+ослабление frozen mode или application code fixes. Технический блокер зависимостей снят.
+
+| Проверка | Финальный результат |
 | --- | --- |
-| `node scripts/prepare-maplibre.mjs && node node_modules/next/dist/bin/next build` | Не дошла до build: отсутствует `maplibre-gl` |
-| `node node_modules/typescript/bin/tsc --noEmit` | Не проходит: отсутствуют `maplibre-gl`, `geojson` types, `@playwright/test`; связанные implicit-any errors |
-| `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium node scripts/test-map.mjs` | Не запускается suite: отсутствует `@playwright/test/cli` |
+| `pnpm install --frozen-lockfile` | PASS; lockfile up to date, 93 packages, без изменения package/lockfile |
+| `pnpm build` | PASS; Next.js 16.3.3 production build, все существующие routes собраны |
+| `pnpm typecheck` | PASS; `tsc --noEmit` |
+| `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium pnpm test` | PASS; 6 map + 1 missing-key tests, 7 ожидаемых skips при разделении конфигураций |
+| Согласованность документов/frontend/Next.js | Проверены четыре документа, consumer types, Map/Detail/Saved/Profile/Explore, локальные Next guides и актуальные Supabase SSR docs |
+| Security design review | Статический review RLS/ownership/grants/anon/Auth/session/A-B; результат и границы в schema proposal |
+| Secret review | Ручной review четырёх документов и diff; pattern scan credentials/private keys/JWT/credential URLs, без найденных значений secrets |
+| Scope/Markdown | Только четыре docs; local links и code fences проверены, `git diff --check` без ошибок |
+| Supabase structure/Auth/RLS/history audit | BLOCKED: `AlmawayV1` не предоставлен инструментам текущего чата |
+| SQL replay и runtime A/B isolation | NOT RUN: это проверка будущей реализации, текущий этап не создаёт schema/users |
 
-Зависимости не восстанавливались в соответствии с запретом этапа. Эти результаты —
-ограничения доступной среды, не успешная regression verification. Изменения только
-документальные; SQL replay, Supabase audit и A/B isolation **не выполнялись**.
-Markdown links, scope diff и whitespace проверяются отдельно перед фиксацией artifact.
+Frontend checks выполнены в чистой копии исходного `f383d1f`; application source,
+конфигурация, tests, package manifest и lockfile совпадают с финальной doc веткой.
+Единственное автоматически изменённое tracked поле в disposable copy — `next-env.d.ts`:
+Next dev переключил generated imports из `.next/types/` в `.next/dev/types/`.
+Это изменение остаётся только во временной копии, не включено в PR. В основной ветке
+после проверок меняются только Markdown-документы. Тесты используют контролируемый
+MapTiler style и test placeholder key: это не проверка live tiles/ключа, Supabase или Auth.
+Windows в текущей среде не проверялся.
+
+В итоговом diff нет application code, dependencies, lockfile, executable migrations,
+Auth configuration или deployment изменений. SQL остаётся текстом в code fences.
+Документы готовы к review; Phase 2B-2 не начата. Единственное внешнее ограничение —
+доступность AlmaWay подключения для read-only audit, описанная в разделе 1.
