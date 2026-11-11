@@ -1,9 +1,11 @@
 # Phase 2B-1 — минимальная схема: проект, не migration
 
-**Предложение. Ничего из SQL ниже не исполнялось.** AlmaWay идентифицирован через
-`AlmawayV1`, но его БД недоступна при статусе `INACTIVE`; совместимость объектов не проверена. Не копировать этот документ
-на hosted БД: сначала [read-only аудит](backend-contract.md#5-требуемый-доступ-к-almaway-и-следующий-read-only-аудит)
-и [migration plan](backend-migration-plan.md). Это design artifact в Markdown;
+**Предложение. Ничего из DDL/RLS ниже не применялось.** Завершающий
+[read-only audit](audits/supabase-phase-2b-1-2026-11-11.md) подтвердил ACTIVE_HEALTHY,
+PostgreSQL 17.6 и отсутствие всех четырёх application tables. Приватный Auth config
+проверен не полностью; scope и подтверждённые grants/functions приведены в report.
+Следующий шаг — только отдельно разрешённая local preparation по
+[migration plan](backend-migration-plan.md); hosted apply этим документом не разрешён.
 `supabase/migrations/` в Phase 2B-1 не создаётся.
 
 ## Модель
@@ -98,8 +100,8 @@ create index saved_places_user_order_idx
 create index saved_places_place_idx on public.saved_places (place_id);
 ```
 
-`gen_random_uuid()` — встроенная возможность современных Supabase Postgres; actual version
-подлежит аудиту, никаких extensions устанавливать ради этого проекта не предполагается.
+`gen_random_uuid()` доступна в подтверждённом PostgreSQL 17.6; устанавливать extension
+ради UUID этой схемы не требуется.
 FK `place_sources.place_id` покрыт первым столбцом dedup UNIQUE index. Небольшому каталогу
 не нужны GIN tags, spatial index и speculative performance indexes. На росте проверять EXPLAIN.
 `created_at` задаётся БД и недоступен для записи обычному клиенту. `updated_at` и его trigger
@@ -178,7 +180,7 @@ reviewed pipeline, а public adapter исключает повреждённую
 `anon` = visitor без Auth session. Supabase anonymous Auth account — отдельный случай:
 он имеет роль `authenticated`, поэтому private policies дополнительно требуют
 `(auth.jwt()->>'is_anonymous')::boolean is false`. Missing claim закрывает private доступ.
-Не включать anonymous sign-ins; actual setting пока неизвестен.
+Не включать anonymous sign-ins; в публичном Auth settings snapshot они выключены.
 
 | Объект / действие | Visitor `anon` | Постоянный authenticated owner | Другой authenticated user | Администратор приложения |
 | --- | --- | --- | --- | --- |

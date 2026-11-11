@@ -1,56 +1,37 @@
 # AlmaWay V1 — Phase 2B-1: backend contract
 
-Статус: **проект для review; не применён к Supabase**. Проверка: 11 ноября 2026.
+Статус: **контракт merged через PR #2; schema не применена к Supabase**. Проверка: 11 ноября 2026.
 Канонический репозиторий: `Arvex-studio/almaway-project-V1`.
 
 ## 1. Результат и границы проверки
 
-Phase 2B-0 объединена в `main`: PR [#1](https://github.com/Arvex-studio/almaway-project-V1/pull/1),
-`merged: true`, merge commit `94034e6976233c96d569b3cf9b471a24b4b4c655`.
-Это SHA актуального `origin/main` после `git fetch origin main` на момент проверки.
-Первоначальный локальный HEAD: `f87c6ff16f97c44ae857f6dbd5917a6195c9c716`, ветка `work`,
-рабочее дерево чистое. Документы подготовлены в `docs/phase-2b-1-backend-contract`
-от проверенного `origin/main`. Прочитан корневой `AGENTS.md`; других вложенных
-`AGENTS.md` среди файлов репозитория не обнаружено.
+Phase 2B-0 объединена в main через PR #1. Phase 2B-1 contract PR
+[#2](https://github.com/Arvex-studio/almaway-project-V1/pull/2) также merged;
+актуальная проверенная baseline main — `d9ffe3ab0d2324213a2d2c6503ec88913e5e5b9a`.
+Результаты завершающего [read-only аудита Supabase](audits/supabase-phase-2b-1-2026-11-11.md)
+и sanitized evidence сохранены отдельно. SQL contract не применялся.
 
-При финальной ревизии повторно проверены `origin/main` (тот же SHA), чистая локальная
-ветка и исходный doc commit `f383d1fd67cbc83c098eb19abd0c123daf81238e`.
-
-**AlmaWay OAuth discovery подтверждён при повторном review PR #2.** Через разрешённое
-подключение `AlmawayV1` выполнены read-only `list_projects`, `get_project`,
-`get_organization`, затем попытки `list_tables(public)` и `list_migrations`.
-Подключения Gridy/Qaskelen в этой ревизии не использовались.
-
-| Metadata | Подтверждённое значение |
-| --- | --- |
-| Project name / ref | `almaway-project-V1` / `nwmmqtyfaumuaocspsur` |
-| Organization name / id | `Almaway-project-V1` / `mlghjrgokzobvflbqmay` |
-| Project status / region | `INACTIVE` / `ap-south-1` |
-| Database metadata version | `17.6.1.166`, PostgreSQL 17; это metadata, не успешное соединение |
-| Organization plan | `free`; наличие backups/PITR/возможность восстановления не проверены |
-
-Имя, организация и ref совпали с переданными владельцем историческими сведениями.
-Historical ref теперь подтверждён discovery metadata, однако это **не подтверждает schema**.
-`list_tables` вернул `Database is possibly not accessible at the moment`;
-`list_migrations` — `Connection terminated due to connection timeout`.
-Ни ошибка, ни статус INACTIVE не доказывают отсутствие таблиц/migrations.
-Auth, RLS и migration history остаются неизвестны; SQL и изменения состояния проекта
-не выполнялись. Старый OAuth-блокер снят, повторно подключать аккаунт не требуется.
-
-**Единственный внешний блокер для полного read-only аудита:** владельцу возобновить
-существующий проект в [его Supabase Dashboard](https://supabase.com/dashboard/project/nwmmqtyfaumuaocspsur),
-чтобы БД снова была доступна для чтения. Агент не выполняет Resume/Restore: это mutation,
-запрещённая текущей задачей. Не создавать замену, новый проект или платные ресурсы.
-После возобновления агент повторяет metadata/schema/Auth/RLS/history audit на том же ref.
+После восстановления, запущенного владельцем, `AlmawayV1` прошёл COMING_UP →
+ACTIVE_HEALTHY. Project `almaway-project-V1`, organization `Almaway-project-V1`,
+ref `nwmmqtyfaumuaocspsur` подтверждены. Прежний блокер INACTIVE снят;
+Gridy/Qaskelen не использовались. БД читалась через SELECT metadata/aggregates;
+Auth/Data API — только GET. Агент не выполнял restore, migrations или Auth changes.
 
 | Объект проверки | Подтверждено | Не установлено |
 | --- | --- | --- |
-| GitHub | Canonical origin, merge 2B-0, SHA main, чистое исходное дерево | Последующие изменения main после проверки |
+| GitHub | PR #2 merged, SHA main выше; AGENTS.md прочитан, application source не менялся | Последующие изменения после snapshot |
 | Frontend | Next.js 16.3.3, React 19, TS 5.7.3; локальные данные, demo Saved/Profile | Работа с настоящими аккаунтами |
-| Supabase discovery | AlmaWay project/ref/org подтверждены через AlmawayV1, статус INACTIVE | Время/способ возобновления проекта |
-| Database | Попытка list_tables не смогла подключиться к БД | Таблицы, записи, расширения, функции, триггеры, views, grants, exposed schemas, RLS |
-| Auth | В приложении нет Supabase/Auth-интеграции | Providers, signup, anonymous sign-ins, SMTP, redirect allowlist, JWT keys, TTL, hooks, sessions |
-| Migrations | В Git нет `supabase/`, config, migrations; hosted list_migrations завершился timeout | Hosted migration history и drift |
+| Supabase discovery | AlmaWay identity совпала; ACTIVE_HEALTHY, PostgreSQL 17.6 | Будущие изменения состояния |
+| Database | Нет application tables/views/functions/constraints/indexes; четыре таблицы контракта отсутствуют | Будущая schema и поведение policies после реализации |
+| Auth | Public settings: email/signup включены, autoconfirm/anonymous/phone/OAuth выключены; JWKS ES256; users=0 | Private Management config: redirects, SMTP, sessions, Auth TTL/hooks/policy |
+| Grants/RLS | Actual default ACL широкие; client roles не BYPASSRLS; public tables и policies отсутствуют | Runtime A/B isolation — не проверялось без будущей schema/users |
+| Migrations | list_migrations пуст; supabase_migrations schema/table отсутствуют; Git migration files нет | Будущая history после реализации |
+| Advisors | Security/performance/health: lints=[] | Это не доказательство полной безопасности или готовности live Auth |
+
+**Оставшийся пробел полного Auth audit:** текущие tools не читают private Auth Management
+config. Требуется sanitized read-only export соответствующих полей либо разрешённая
+операция их чтения, без secrets. Это gate до live Auth, не блокер подготовки local
+migrations/client foundation по отдельному явному запуску Phase 2B-2.
 
 Таблицы, migrations, Auth settings и deployment не изменялись; зависимости не добавлялись,
 `package.json` и lockfile не менялись. Существующие зависимости установлены по frozen
@@ -320,32 +301,18 @@ project ref должны принадлежать одному подтверж�
 
 ## 5. Требуемый доступ к AlmaWay и следующий read-only аудит
 
-OAuth и identity проекта уже подтверждены (раздел 1). Для полного аудита требуется
-доступность БД существующего проекта после действия владельца в Dashboard; не новая
-авторизация или secret в чате. При повторном запуске сначала read-only recheck статуса.
-Если INACTIVE/connection errors сохраняются, не вызывать restore/resume и не переключать ref.
-Для Auth config, если MCP не предоставляет его чтение, допустим read-only Dashboard
-или sanitized export без SMTP/OAuth secrets/PII; такой пробел фиксируется отдельно,
-а не подменяется предположением. Publishable key потребуется лишь в будущей client фазе.
+Identity, schema/grants/RLS/functions/history и advisors проверены в отдельном
+[audit report](audits/supabase-phase-2b-1-2026-11-11.md). Список прежних read-only
+проверок выполнен для доступных DB/API capabilities; private Auth Management config
+остаётся непроверенным. Источником фактических результатов служит report + JSON,
+а следующие DDL/RLS блоки остаются проектом.
 
-После восстановления доступности ещё раз сверить ref/organization. Только затем, на этом ref:
-
-- Read-only inventory user schemas, tables/columns/types/defaults, PK/FK/checks/indexes,
-  table ownership и RLS flags; functions/triggers/views/security-invoker и exposed schemas.
-- Policies из `pg_policies`, grants/default ACLs, function EXECUTE grants, роли bypass RLS;
-  особенно существующие permissive policies и доступ `anon` к private данным.
-- Auth config: providers, signup/anonymous mode, email confirmation/SMTP readiness,
-  site URL/redirect allowlist, JWT key type/TTL, session settings/hooks; не экспортировать secrets.
-- `list_migrations` и доступная `supabase_migrations.schema_migrations` metadata: версии,
-  порядок, имена/checksums при наличии; сравнить с Git, проверить drift. Не читать Auth
-  credentials, raw sessions, refresh tokens, password hashes и не делать SELECT * из auth.users.
-- Security advisors read-only; storage/realtime/edge objects только если они влияют на
-  exposed surfaces или доступ пользователей. Не включать их автоматически.
-
-Сохранить фактический inventory отдельно с ref, временем и отметками `confirmed/unknown`.
-Если часть audit capabilities недоступна, назвать конкретный пробел. Не объявлять БД
-пустой/безопасной и не использовать migration repair, reset, push, apply или Auth mutations.
-Metadata discovery завершён; аудит содержимого БД остановлен на двух read-only ошибках подключения.
+Перед Phase 2B-2 перечитать main/AGENTS и повторить project/status/schema/history check
+на том же ref: snapshot не защищает от последующего drift. При недоступности проекта
+не выполнять resume/restore и не переключать проект. До live Auth получить только
+sanitized config для site_url/redirect allowlist, Auth TTL/rotation/session policy,
+SMTP readiness, hooks/password/rate-limit settings; нельзя подменять это public settings
+или legacy DB jwt_exp. Секреты, Auth tokens и пользовательские записи не запрашиваются.
 
 ## 6. Документационные основания
 
@@ -397,7 +364,7 @@ Node получен из официального `latest-v22.x`, SHA-256 арх
 | Security design review | Статический review RLS/ownership/grants/anon/Auth/session/A-B; результат и границы в schema proposal |
 | Secret review | Ручной review четырёх документов и diff; pattern scan credentials/private keys/JWT/credential URLs, без найденных значений secrets |
 | Scope/Markdown | Только четыре docs; local links и code fences проверены, `git diff --check` без ошибок |
-| Supabase discovery / database audit | Discovery PASS: identity совпала; audit BLOCKED: INACTIVE, list_tables error, list_migrations timeout |
+| Supabase discovery / database audit | PASS для DB/API capabilities; ACTIVE_HEALTHY; private Auth Management config не проверен, см. audit report |
 | SQL replay и runtime A/B isolation | NOT RUN: это проверка будущей реализации, текущий этап не создаёт schema/users |
 
 Frontend checks выполнены в чистой копии исходного `f383d1f`; application source,
@@ -412,7 +379,7 @@ Windows в текущей среде не проверялся.
 В итоговом diff нет application code, dependencies, lockfile, executable migrations,
 Auth configuration или deployment изменений. SQL остаётся текстом в code fences.
 Документы готовы к review; Phase 2B-2 не начата. Единственное внешнее ограничение —
-доступность БД существующего INACTIVE проекта для read-only audit (раздел 1).
+чтение private Auth Management config для полного Auth audit (раздел 1).
 
 ### Повторная ревизия по замечаниям PR #2
 
