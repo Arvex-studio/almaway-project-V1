@@ -6,4 +6,95 @@ import { Bookmark, ChevronRight, Map, Route } from 'lucide-react'
 import { AppShell } from '@/components/almaway'
 import { useDemoSaved } from '@/components/demo-state'
 import { touristPlaces } from '@/lib/tourist-places'
-export default function SavedPage() { const [tab, setTab] = useState('Места'); const { savedSlugs } = useDemoSaved(); const places = touristPlaces.filter(place => savedSlugs.includes(place.slug)); return <AppShell className="content-shell"><main className="content-page"><header className="page-header"><div><span className="eyebrow">ALMAWAY / ТВОЁ</span><h1>Сохранённое</h1><p>Места и планы, к которым хочется вернуться.</p></div><Bookmark className="page-mark" /></header><div className="segmented">{['Места', 'Маршруты', 'Планы'].map(item => <button type="button" className={tab === item ? 'selected' : ''} onClick={() => setTab(item)} key={item}>{item}</button>)}</div>{tab === 'Места' && places.length > 0 ? places.map(place => <article key={place.slug} className="saved-card"><div className="saved-image" style={{ backgroundImage: place.image ? `url(${place.image})` : undefined }} /><div><span className="eyebrow">{place.region}</span><h2>{place.title}</h2><p>{[place.distance, ...place.metrics.slice(0, 2).map(metric => metric.value)].filter(Boolean).join(' · ')}</p><div className="card-actions"><Link href={`/places/${place.slug}`} className="secondary-button">Открыть <ChevronRight /></Link><Link href="/map" className="primary-button">На карте <Map /></Link></div></div></article>) : <div className="empty-state"><Route /><h2>Здесь появятся {tab.toLowerCase()}</h2><p>Сохраняй идеи из Открытий и планы из Планировщика — они будут ждать тебя здесь.</p><Link href={tab === 'Планы' ? '/plan' : '/explore'} className="primary-button">Найти идеи</Link></div>}<section className="saved-note"><span>Совет AlmaWay</span><p>Сохраняй не только места, но и настроение поездки — так проще собрать маршрут позже.</p></section></main></AppShell> }
+export default function SavedPage() {
+  const [tab, setTab] = useState('Места')
+  const { savedSlugs } = useDemoSaved()
+  const places = touristPlaces.filter((place) =>
+    savedSlugs.includes(place.slug),
+  )
+  return (
+    <AppShell className="content-shell">
+      <main className="content-page">
+        <header className="page-header">
+          <div>
+            <span className="eyebrow">ALMAWAY / ТВОЁ</span>
+            <h1>Сохранённое</h1>
+            <p>Места и планы, к которым хочется вернуться.</p>
+          </div>
+          <Bookmark className="page-mark" />
+        </header>
+        <p className="demo-notice">
+          Демо-сохранения · одно место добавлено для примера. Изменения хранятся
+          только в памяти этой вкладки и сбрасываются при перезагрузке. Аккаунт
+          не подключён.
+        </p>
+        <div className="segmented" aria-label="Тип сохранённого">
+          {['Места', 'Маршруты', 'Планы'].map((item) => (
+            <button
+              type="button"
+              aria-pressed={tab === item}
+              className={tab === item ? 'selected' : ''}
+              onClick={() => setTab(item)}
+              key={item}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+        {tab === 'Места' && places.length > 0 ? (
+          places.map((place) => (
+            <article key={place.slug} className="saved-card">
+              <div
+                className="saved-image"
+                style={{
+                  backgroundImage: place.image
+                    ? `url(${place.image})`
+                    : undefined,
+                }}
+              />
+              <div>
+                <span className="eyebrow">{place.region}</span>
+                <h2>{place.title}</h2>
+                <p>Параметры маршрута уточняются.</p>
+                <div className="card-actions">
+                  <Link
+                    href={`/places/${place.slug}`}
+                    className="secondary-button"
+                  >
+                    Открыть <ChevronRight />
+                  </Link>
+                  <Link href="/map" className="primary-button">
+                    На карте <Map />
+                  </Link>
+                </div>
+              </div>
+            </article>
+          ))
+        ) : (
+          <div className="empty-state">
+            <Route />
+            <h2>Здесь появятся {tab.toLowerCase()}</h2>
+            <p>
+              {tab === 'Места'
+                ? 'Сохрани место из Открытий — оно появится здесь до перезагрузки страницы.'
+                : 'Сохранение маршрутов и планов пока не подключено.'}
+            </p>
+            <Link
+              href={tab === 'Планы' ? '/plan' : '/explore'}
+              className="primary-button"
+            >
+              Найти идеи
+            </Link>
+          </div>
+        )}
+        <section className="saved-note">
+          <span>Совет AlmaWay</span>
+          <p>
+            Сохранённые места доступны в этой вкладке. Синхронизация между
+            устройствами появится после подключения аккаунтов.
+          </p>
+        </section>
+      </main>
+    </AppShell>
+  )
+}
