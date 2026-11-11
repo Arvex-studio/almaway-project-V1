@@ -1,0 +1,47 @@
+name: Backend foundation (local only)
+on:
+  pull_request:
+    paths:
+      - 'lib/backend/**'
+      - 'lib/supabase/**'
+      - 'supabase/**'
+      - 'scripts/backend/**'
+      - 'tests/backend/**'
+      - 'proxy.ts'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/backend-foundation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  local-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.34.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: node scripts/backend/local.mjs start
+      - run: node scripts/backend/local.mjs reset
+      - run: node scripts/backend/local.mjs migrate
+      - run: node scripts/backend/local.mjs check-types
+      - run: node scripts/backend/local.mjs test
+      - run: node scripts/backend/local.mjs advisors
+      - run: pnpm build && pnpm typecheck
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-failure-context
+          path: test-results/
+          retention-days: 7
+      - if: always()
+        run: node scripts/backend/local.mjs stop

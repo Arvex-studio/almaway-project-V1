@@ -1,0 +1,117 @@
+{
+  "observed_at_utc": "2026-11-11T18:24:35.211624+00:00",
+  "display_timezone": "Asia/Qyzylorda",
+  "baseline_main_sha": "d9ffe3ab0d2324213a2d2c6503ec88913e5e5b9a",
+  "audit_pr": {
+    "number": 3,
+    "state": "open",
+    "merged": false,
+    "head_sha": "a2398ce361b68faf8d7b74dbe111455f5fffaabc"
+  },
+  "shared_files_pr": {
+    "number": 5,
+    "head_sha": "1d61439cefc78f6fdc4fadfc9ced08b2655eb152"
+  },
+  "hosted_recheck": {
+    "connection": "AlmawayV1",
+    "project": "almaway-project-V1",
+    "ref": "nwmmqtyfaumuaocspsur",
+    "organization_id": "mlghjrgokzobvflbqmay",
+    "status": "ACTIVE_HEALTHY",
+    "postgres_metadata_version": "17.6.1.166",
+    "public_tables": [],
+    "application_migrations": [],
+    "mutations": false,
+    "auth_flows": false,
+    "private_auth_config_verified": false
+  },
+  "local": {
+    "project_id": "almaway-phase-2b-2",
+    "api_origin": "http://127.0.0.1:55431",
+    "sql_target": "127.0.0.1:55432",
+    "stack": "CLI slim Docker backend, service digests pinned in supabase.lock",
+    "node": "22.23.4",
+    "pnpm": "10.34.3",
+    "supabase_cli": "3.1.0",
+    "next": "16.3.3",
+    "supabase_js": "2.119.0",
+    "supabase_ssr": "0.12.7",
+    "final_state": {
+      "citations": 5,
+      "local_fixture_users": 0,
+      "places": 5,
+      "profiles": 0,
+      "saves": 0,
+      "version": "PostgreSQL 17.11 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit"
+    }
+  },
+  "checks": {
+    "clean_replay": "passed: initial start and three clean resets; final replay includes scoped seed publication and equivalent JWT initplan expression",
+    "migration_runner_retry": "passed: applied=[] after final reset; local file and database history both 20261111173352",
+    "generated_types": "passed: regenerated from local public schema, formatted by pinned TypeScript printer, byte comparison after reset",
+    "backend_tests": {
+      "tests": 19,
+      "pass": 19,
+      "fail": 0,
+      "skip": 0,
+      "matrix_subtests": 13,
+      "unit_tests": 5,
+      "parent_test_included_in_total": true
+    },
+    "rls_proof": "Direct PostgREST HTTP requests with publishable API key, no session or separate GoTrue A/B JWTs. Signed local synthetic claims also test anonymous/missing/expired tokens. No postgres/service_role assertions are represented as RLS proof.",
+    "postgres_checks": "Separate atomic catalog/constraint/FK/index/grant checks only; test/admin access only for fixture setup, integrity and cleanup.",
+    "sessions": "passed: parallel isolated request clients, real refresh tokens and cookie jars A/B, forwarded cookies, SDK options/cache headers, invalid/missing/anonymous claims, invalid refresh, A-to-B context switch",
+    "advisors": {
+      "results": [],
+      "fail_on": "warn"
+    },
+    "build": "passed: Next.js 16.3.3 production build, default demo configuration",
+    "typecheck": "passed: pnpm typecheck",
+    "frontend_tests": {
+      "keyed_pass": 6,
+      "missing_key_pass": 1,
+      "expected_mode_specific_skips": 7,
+      "command": "pnpm test",
+      "ci_mode_local": "passed: CI=1 build, typecheck and 6 keyed + 1 missing-key checks on the foundation with shared CI dev-indicator configuration"
+    },
+    "secrets_scan": {
+      "tool": "gitleaks 8.30.1",
+      "release_checksum_verified": true,
+      "scope": "full staged repository export, including new backend files; ignored local credentials/build outputs excluded",
+      "findings": 0
+    },
+    "diff_check": "passed",
+    "ci": {
+      "initial_run": 43075538079,
+      "attempts": 2,
+      "backend_build_typecheck_advisors": "passed in both attempts",
+      "browser_failure": "Next.js development portal intercepted missing-key navigation click",
+      "fix": "CI-only devIndicators:false in shared prerequisite #5; normal and CI=1 local map checks passed; assertions unchanged",
+      "final_ci": "pending at artifact capture; consult PR checks for final head"
+    },
+    "seed_publication_scope": "Validation/publication restricted to the five manifest UUIDs; unrelated draft places are not updated"
+  },
+  "artifact_sha256": {
+    "supabase/migrations/20261111173352_almaway_v1_contract.sql": "95459ac4989731ba9f29d3f45fc2db90376b5c4b9bb73cc573aa07c7cc84c749",
+    "supabase/seed.sql": "db58dab6bafb7cc3e2001bc9dd7d62e619bac7628ab00ae0d5839c7dc66a9f9b",
+    "supabase/seeds/reviewed-five.json": "73b19237006d95263d67deb84acce980c0d9c0ed0e104f99a98f3f481842c380",
+    "supabase/supabase.lock": "1ad816b128120d445ea638bb92db0f7193189f1c5f1ca0357092e98ab5a24947",
+    "lib/supabase/database.types.ts": "b7c84dd893445ede61aa9650d9ff91cc72dd221d17aaa6f9f84ef0dbc27d8403"
+  },
+  "remaining_gates": [
+    "review and merge shared-file prerequisite and foundation, freeze approved SHA",
+    "fresh hosted identity/schema/history/grants/advisors recheck and drift reconciliation",
+    "verified backup/export recovery point and restore rehearsal",
+    "separate hosted seed/publication review; no local Auth fixtures on hosted",
+    "sanitized private Auth Management config review before live Auth/callback rollout",
+    "separate explicit hosted mutation/deploy authorization"
+  ],
+  "limits": [
+    "No app/components/demo source changes or live Auth routes",
+    "Publication child-source presence is enforced by reviewed seed/adapter, not a DB cross-table constraint",
+    "getClaims validates JWT signature/expiry, not immediate server-side session revocation",
+    "Local PG17.11 and hosted PG17.6 patch versions differ",
+    "20-place research pack, photos and route metrics not imported",
+    "Raw test output and local credentials excluded from this artifact"
+  ]
+}
