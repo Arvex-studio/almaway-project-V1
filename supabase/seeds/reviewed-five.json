@@ -1,0 +1,153 @@
+{
+  "version": 1,
+  "baselineMain": "d9ffe3ab0d2324213a2d2c6503ec88913e5e5b9a",
+  "review": "Existing five map features and original coordinate provenance only. Editorial descriptions are not route or access claims. No new field survey.",
+  "places": [
+    {
+      "id": "10000000-0000-4000-8000-000000000001",
+      "slug": "bolshoe-almatinskoe-ozero",
+      "title": "Большое Алматинское озеро",
+      "region": "Заилийский Алатау",
+      "description": "Большое Алматинское озеро в Заилийском Алатау.",
+      "why": "Озеро в горном окружении.",
+      "category": "lake",
+      "latitude": 43.0510419,
+      "longitude": 76.9853383,
+      "tags": [
+        "lakes",
+        "scenic",
+        "weekend"
+      ],
+      "image_url": null,
+      "source": {
+        "id": "20000000-0000-4000-8000-000000000001",
+        "kind": "coordinates",
+        "field_key": "coordinates",
+        "provider": "OpenStreetMap",
+        "source_url": "https://www.openstreetmap.org/relation/3427772",
+        "retrieved_at": "2026-09-30",
+        "is_primary": true,
+        "method": "bounding-box-center",
+        "feature": "Big Almaty Lake; natural=water; water=lake",
+        "attribution": "OpenStreetMap contributors",
+        "license": "ODbL-1.0"
+      }
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000002",
+      "slug": "medeo",
+      "title": "Медео",
+      "region": "Заилийский Алатау",
+      "description": "Высокогорный спортивный комплекс в Малоалматинском ущелье.",
+      "why": "Горное окружение и отправная точка для знакомства с Малоалматинским ущельем.",
+      "category": "sports_complex",
+      "latitude": 43.1570802,
+      "longitude": 77.059452,
+      "tags": [
+        "mountains",
+        "scenic"
+      ],
+      "image_url": null,
+      "source": {
+        "id": "20000000-0000-4000-8000-000000000002",
+        "kind": "coordinates",
+        "field_key": "coordinates",
+        "provider": "OpenStreetMap",
+        "source_url": "https://www.openstreetmap.org/way/171504564",
+        "retrieved_at": "2026-09-30",
+        "is_primary": true,
+        "method": "bounding-box-center",
+        "feature": "Medeu; leisure=sports_centre; Wikidata Q864796",
+        "attribution": "OpenStreetMap contributors",
+        "license": "ODbL-1.0"
+      }
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000003",
+      "slug": "kok-tobe",
+      "title": "Кок-Тобе",
+      "region": "Алматы",
+      "description": "Гора Кок-Тобе с видом на Алматы.",
+      "why": "Панорама города на фоне гор Заилийского Алатау.",
+      "category": "mountain",
+      "latitude": 43.2328701,
+      "longitude": 76.9760743,
+      "tags": [
+        "mountains",
+        "scenic"
+      ],
+      "image_url": null,
+      "source": {
+        "id": "20000000-0000-4000-8000-000000000003",
+        "kind": "coordinates",
+        "field_key": "coordinates",
+        "provider": "OpenStreetMap",
+        "source_url": "https://www.openstreetmap.org/node/12985379969",
+        "retrieved_at": "2026-09-30",
+        "is_primary": true,
+        "method": "node",
+        "feature": "Kok-Tobe; natural=peak; ele=1130",
+        "attribution": "OpenStreetMap contributors",
+        "license": "ODbL-1.0"
+      }
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000004",
+      "slug": "butakovskiy-vodopad",
+      "title": "Бутаковский водопад",
+      "region": "Заилийский Алатау",
+      "description": "Водопад в Бутаковском ущелье.",
+      "why": "Природная точка в горном ущелье рядом с Алматы.",
+      "category": "waterfall",
+      "latitude": 43.1723059,
+      "longitude": 77.1140067,
+      "tags": [
+        "mountains",
+        "scenic"
+      ],
+      "image_url": null,
+      "source": {
+        "id": "20000000-0000-4000-8000-000000000004",
+        "kind": "coordinates",
+        "field_key": "coordinates",
+        "provider": "OpenStreetMap",
+        "source_url": "https://www.openstreetmap.org/node/1843570839",
+        "retrieved_at": "2026-09-30",
+        "is_primary": true,
+        "method": "node",
+        "feature": "Butakovskiy waterfall; tourism=attraction",
+        "attribution": "OpenStreetMap contributors",
+        "license": "ODbL-1.0"
+      }
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000005",
+      "slug": "furmanovka",
+      "title": "Фурмановка",
+      "region": "Заилийский Алатау",
+      "description": "Вершина Фурманова в Заилийском Алатау.",
+      "why": "Горная вершина над Малоалматинским ущельем.",
+      "category": "peak",
+      "latitude": 43.1498971,
+      "longitude": 77.115667,
+      "tags": [
+        "mountains",
+        "scenic"
+      ],
+      "image_url": null,
+      "source": {
+        "id": "20000000-0000-4000-8000-000000000005",
+        "kind": "coordinates",
+        "field_key": "coordinates",
+        "provider": "OpenStreetMap",
+        "source_url": "https://www.openstreetmap.org/node/3718134916",
+        "retrieved_at": "2026-09-30",
+        "is_primary": true,
+        "method": "node",
+        "feature": "Furmanov; natural=peak; loc_name=Фурмановка",
+        "attribution": "OpenStreetMap contributors",
+        "license": "ODbL-1.0"
+      }
+    }
+  ]
+}
