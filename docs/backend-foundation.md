@@ -10,7 +10,7 @@ Read-only recheck through **AlmawayV1** confirmed `almaway-project-V1`, ref
 Postgres metadata `17.6.1.166`, zero public tables and zero application migrations.
 No hosted writes, Auth flows/settings changes, users, deploys, or merges were performed.
 
-Shared dependency/env changes are isolated in prerequisite [PR #5](https://github.com/Arvex-studio/almaway-project-V1/pull/5).
+Shared dependency/env and CI-only dev-indicator changes are isolated in prerequisite [PR #5](https://github.com/Arvex-studio/almaway-project-V1/pull/5).
 The foundation branch is stacked on that branch. Review/merge #5 first; then retarget the
 foundation PR to main without duplicating its dependency changes. Frontend branches,
 `app/`, components, original data modules, and demo behavior are untouched.
@@ -59,6 +59,11 @@ using slim images and moving disposable build/package caches to temporary storag
 A CI workflow repeats reset, type generation consistency, API/session tests, advisors,
 build/typecheck and existing map tests. It needs no hosted credentials. Local test files
 intentionally avoid Playwright's `*.spec.*`/`*.test.*` names so they do not alter its discovery.
+Two initial GitHub Actions attempts passed backend/build checks but the missing-key browser
+case was blocked by Next's developer portal intercepting mobile navigation clicks. The shared
+prerequisite now sets `devIndicators: false` only under CI using the supported Next.js option;
+compile/runtime errors remain visible. Assertions are unchanged. CI also retains Playwright
+failure context for diagnosis.
 
 ## Schema, authority and visibility
 
@@ -145,7 +150,7 @@ They are not connected to the demo interface by this PR.
 
 `supabase/seeds/reviewed-five.json` records fixed place/citation UUIDs and the input main SHA.
 `seed.sql` inserts drafts and citations, validates compatible primary provenance, then
-publishes atomically. It fails on collisions; it does not overwrite existing editorial rows.
+publishes only those five UUIDs atomically. It fails on collisions; it does not overwrite existing editorial rows.
 This is a local reset seed, separate from application schema migration and hosted data rollout.
 
 | Slug | Place UUID suffix | Coordinate provenance |

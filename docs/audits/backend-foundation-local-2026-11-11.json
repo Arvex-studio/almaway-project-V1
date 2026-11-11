@@ -1,5 +1,5 @@
 {
-  "observed_at_utc": "2026-11-11T18:11:07.136794+00:00",
+  "observed_at_utc": "2026-11-11T18:24:35.211624+00:00",
   "display_timezone": "Asia/Qyzylorda",
   "baseline_main_sha": "d9ffe3ab0d2324213a2d2c6503ec88913e5e5b9a",
   "audit_pr": {
@@ -10,7 +10,7 @@
   },
   "shared_files_pr": {
     "number": 5,
-    "head_sha": "7a2e1a148809623438050de3b539a328c6bdfbc6"
+    "head_sha": "1d61439cefc78f6fdc4fadfc9ced08b2655eb152"
   },
   "hosted_recheck": {
     "connection": "AlmawayV1",
@@ -46,7 +46,7 @@
     }
   },
   "checks": {
-    "clean_replay": "passed: initial start and two clean resets; final reset includes equivalent JWT initplan expression",
+    "clean_replay": "passed: initial start and three clean resets; final replay includes scoped seed publication and equivalent JWT initplan expression",
     "migration_runner_retry": "passed: applied=[] after final reset; local file and database history both 20261111173352",
     "generated_types": "passed: regenerated from local public schema, formatted by pinned TypeScript printer, byte comparison after reset",
     "backend_tests": {
@@ -71,7 +71,8 @@
       "keyed_pass": 6,
       "missing_key_pass": 1,
       "expected_mode_specific_skips": 7,
-      "command": "pnpm test"
+      "command": "pnpm test",
+      "ci_mode_local": "passed: CI=1 build, typecheck and 6 keyed + 1 missing-key checks on the foundation with shared CI dev-indicator configuration"
     },
     "secrets_scan": {
       "tool": "gitleaks 8.30.1",
@@ -80,11 +81,19 @@
       "findings": 0
     },
     "diff_check": "passed",
-    "ci": "workflow added; local execution results above, no claim that a hosted Actions run has completed"
+    "ci": {
+      "initial_run": 43075538079,
+      "attempts": 2,
+      "backend_build_typecheck_advisors": "passed in both attempts",
+      "browser_failure": "Next.js development portal intercepted missing-key navigation click",
+      "fix": "CI-only devIndicators:false in shared prerequisite #5; normal and CI=1 local map checks passed; assertions unchanged",
+      "final_ci": "pending at artifact capture; consult PR checks for final head"
+    },
+    "seed_publication_scope": "Validation/publication restricted to the five manifest UUIDs; unrelated draft places are not updated"
   },
   "artifact_sha256": {
     "supabase/migrations/20261111173352_almaway_v1_contract.sql": "95459ac4989731ba9f29d3f45fc2db90376b5c4b9bb73cc573aa07c7cc84c749",
-    "supabase/seed.sql": "00eda64bbf6fc829bbcaf248e1779edfed89616c6444384b2cc374680ce5466e",
+    "supabase/seed.sql": "db58dab6bafb7cc3e2001bc9dd7d62e619bac7628ab00ae0d5839c7dc66a9f9b",
     "supabase/seeds/reviewed-five.json": "73b19237006d95263d67deb84acce980c0d9c0ed0e104f99a98f3f481842c380",
     "supabase/supabase.lock": "1ad816b128120d445ea638bb92db0f7193189f1c5f1ca0357092e98ab5a24947",
     "lib/supabase/database.types.ts": "b7c84dd893445ede61aa9650d9ff91cc72dd221d17aaa6f9f84ef0dbc27d8403"

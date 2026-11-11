@@ -17,16 +17,28 @@ do $$
 begin
   if exists (
     select 1 from public.places p
-    where (select count(*) from public.place_sources s
+    where p.id in (
+      '10000000-0000-4000-8000-000000000001',
+      '10000000-0000-4000-8000-000000000002',
+      '10000000-0000-4000-8000-000000000003',
+      '10000000-0000-4000-8000-000000000004',
+      '10000000-0000-4000-8000-000000000005'
+    ) and ((select count(*) from public.place_sources s
       where s.place_id = p.id and s.kind = 'coordinates' and s.field_key = 'coordinates'
       and s.is_primary and s.provider = 'OpenStreetMap'
       and s.method in ('node', 'bounding-box-center')
       and s.source_url ~ '^https://www[.]openstreetmap[.]org/(node|way|relation)/[0-9]+$'
       and s.attribution = 'OpenStreetMap contributors' and s.license = 'ODbL-1.0') <> 1
-      or p.image_url is not null
+      or p.image_url is not null)
   ) then
     raise exception 'Local seed publication validation failed';
   end if;
 end $$;
-update public.places set status = 'published';
+update public.places set status = 'published' where id in (
+  '10000000-0000-4000-8000-000000000001',
+  '10000000-0000-4000-8000-000000000002',
+  '10000000-0000-4000-8000-000000000003',
+  '10000000-0000-4000-8000-000000000004',
+  '10000000-0000-4000-8000-000000000005'
+);
 commit;
