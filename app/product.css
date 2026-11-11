@@ -1546,3 +1546,61 @@ button[aria-pressed="true"] > .lucide-bookmark {
   padding: 8px 0;
   margin-bottom: 8px;
 }
+/* Constrain intrinsic photo width; a clipped grid is not detectable as page overflow. */
+.saved-card {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+}
+.saved-card figure,
+.saved-card > div {
+  min-width: 0;
+}
+.saved-image {
+  width: 100%;
+  aspect-ratio: auto;
+}
+@media (max-width: 699px) {
+  .saved-card {
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 16px;
+  }
+  .saved-image {
+    height: 120px;
+  }
+  .saved-card .photo-credit {
+    font-size: 8px;
+    line-height: 1.6;
+  }
+  .saved-card h2 {
+    font-size: 20px;
+  }
+  .saved-card > div {
+    padding: 0;
+  }
+  .saved-card .eyebrow {
+    font-size: 9px;
+    letter-spacing: 1px;
+  }
+  .saved-card .card-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .saved-card .card-actions > * {
+    width: 100%;
+    min-width: 0;
+  }
+  .saved-card .saved-remove {
+    font-size: 11px;
+  }
+  .saved-card p {
+    font-size: 12px;
+  }
+}
+@media (max-width: 359px) {
+  .saved-card {
+    grid-template-columns: 80px minmax(0, 1fr);
+    gap: 12px;
+  }
+  .saved-card h2 {
+    font-size: 18px;
+  }
+}

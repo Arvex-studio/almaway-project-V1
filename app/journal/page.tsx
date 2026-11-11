@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   Heart,
@@ -16,19 +17,17 @@ import { PhotoCredit } from "@/components/editorial";
 import { JournalDialog } from "@/components/journal/journal-dialog";
 import { Composer } from "@/components/journal/composer";
 import { useJournal } from "@/components/journal/journal-state";
-import { touristPlaces, getTouristPlace } from "@/lib/tourist-places";
-export default function Journal() {
+import { getTouristPlace } from "@/lib/tourist-places";
+function JournalContent() {
+  const params = useSearchParams();
+  const router = useRouter();
+  const placeFilter = getTouristPlace(params.get("place") || "")?.slug || "";
   const state = useJournal();
   const [compose, setCompose] = useState(false),
     [commentsOpen, setCommentsOpen] = useState(false),
     [profileOpen, setProfileOpen] = useState(false),
     [comment, setComment] = useState(""),
-    [tab, setTab] = useState("Лента"),
-    [placeFilter, setPlaceFilter] = useState("");
-  useEffect(() => {
-    const slug = new URLSearchParams(window.location.search).get("place");
-    if (slug && getTouristPlace(slug)) setPlaceFilter(slug);
-  }, []);
+    [tab, setTab] = useState("Лента");
   const lake = "bolshoe-almatinskoe-ozero",
     selected = getTouristPlace(placeFilter);
   const showExample =
@@ -71,7 +70,10 @@ export default function Journal() {
         {selected && (
           <p className="journal-filter">
             Место: {selected.title}{" "}
-            <button className="text-action" onClick={() => setPlaceFilter("")}>
+            <button
+              className="text-action"
+              onClick={() => router.replace("/journal")}
+            >
               Все места ×
             </button>
           </p>
@@ -320,5 +322,22 @@ export default function Journal() {
         )}
       </main>
     </AppShell>
+  );
+}
+
+export default function Journal() {
+  return (
+    <Suspense
+      fallback={
+        <AppShell className="content-shell">
+          <main className="content-page">
+            <h1>Полевой журнал</h1>
+            <p role="status">Открываем истории…</p>
+          </main>
+        </AppShell>
+      }
+    >
+      <JournalContent />
+    </Suspense>
   );
 }

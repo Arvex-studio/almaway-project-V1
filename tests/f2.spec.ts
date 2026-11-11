@@ -105,13 +105,11 @@ test("composer guards invalid file and preserves text when cancelling discard", 
 }) => {
   await page.goto("/journal");
   await page.getByRole("button", { name: "Создать запись" }).click();
-  await page
-    .getByLabel(/Твоя фотография/)
-    .setInputFiles({
-      name: "bad.svg",
-      mimeType: "image/svg+xml",
-      buffer: Buffer.from("<svg/>"),
-    });
+  await page.getByLabel(/Твоя фотография/).setInputFiles({
+    name: "bad.svg",
+    mimeType: "image/svg+xml",
+    buffer: Buffer.from("<svg/>"),
+  });
   await expect(page.getByRole("dialog").getByRole("alert")).toContainText(
     "до 8 МБ",
   );
@@ -132,4 +130,81 @@ test("composer guards invalid file and preserves text when cancelling discard", 
   await expect(
     page.getByRole("button", { name: "Создать запись" }),
   ).toBeFocused();
+});
+
+test("saved card actions fit inside their card at 320px", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 844 });
+  await page.goto("/saved");
+  const card = page.getByRole("article").first();
+  const box = (await card.boundingBox())!;
+  for (const control of await card.locator("a,button,.saved-image").all()) {
+    const item = (await control.boundingBox())!;
+    expect(item.x + item.width).toBeLessThanOrEqual(box.x + box.width);
+  }
+  await card.getByRole("link", { name: "На карте" }).click();
+  await expect(page).toHaveURL(/place=bolshoe-almatinskoe-ozero/);
+});
+test("invalid first photo can recover to a text-only draft", async ({
+  page,
+}) => {
+  await page.goto("/journal");
+  await page.getByRole("button", { name: "Создать запись" }).click();
+  await page
+    .getByLabel(/Твоя фотография/)
+    .setInputFiles({
+      name: "bad.svg",
+      mimeType: "image/svg+xml",
+      buffer: Buffer.from("<svg/>"),
+    });
+  await page
+    .getByLabel("Заметка", { exact: true })
+    .fill("Текст без фотографии");
+  await page.getByRole("button", { name: "Продолжить без фото" }).click();
+  await page.getByRole("button", { name: "Сохранить черновик" }).click();
+  await expect(
+    page.getByText("Текст без фотографии", { exact: true }),
+  ).toBeVisible();
+});
+test("removed photo can be selected again and saved without upload", async ({
+  page,
+}) => {
+  const uploads: string[] = [];
+  page.on("request", (r) => {
+    if (r.method() === "POST") uploads.push(r.url());
+  });
+  await page.goto("/journal");
+  await page.getByRole("button", { name: "Создать запись" }).click();
+  const input = page.getByLabel(/Твоя фотография/);
+  await input.setInputFiles("public/images/bao.webp");
+  await expect(
+    page.getByAltText("Предпросмотр выбранной фотографии"),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Убрать фото" }).click();
+  await input.setInputFiles("public/images/bao.webp");
+  await expect(
+    page.getByAltText("Предпросмотр выбранной фотографии"),
+  ).toBeVisible();
+  await page
+    .getByLabel("Заметка", { exact: true })
+    .fill("Фото в моём черновике");
+  await page.getByRole("button", { name: "Сохранить черновик" }).click();
+  await expect(
+    page.getByAltText("Фотография из твоего черновика"),
+  ).toBeVisible();
+  expect(uploads).toEqual([]);
+});
+test("global Journal navigation resets a place-specific feed", async ({
+  page,
+}) => {
+  await page.goto("/journal?place=medeo");
+  await expect(page.getByText("Место: Медео")).toBeVisible();
+  await page
+    .getByRole("navigation")
+    .getByRole("link", { name: "Журнал" })
+    .click();
+  await expect(page).toHaveURL(/\/journal$/);
+  await expect(
+    page.getByRole("heading", { name: /Тишина между/ }),
+  ).toBeVisible();
+  await expect(page.getByText("Место: Медео")).toHaveCount(0);
 });

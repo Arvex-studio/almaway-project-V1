@@ -30,3 +30,16 @@ Node22.23.4, pnpm10.34.3. Frozen install succeeded. Browser suite:22 distinct pa
 
 ## Remaining limits
 Social publishing/accounts/sync, real AI planning, Journey GPS and verified access/weather/route details are not implemented. Three catalogue objects still lack licensed photography. Current catalogue covers five Almaty-region objects, not all Kazakhstan. OpenFreeMap availability is external; MapTiler key is still absent. Local state is intentionally temporary. No production release or merge.
+
+## Independent review and final fixes
+A fresh read-only reviewer found two important issues: a Saved image's inherited aspect-ratio expanded its grid and clipped controls at320px despite zero page overflow; an invalid first file blocked a valid text-only draft. Both now have reproducing browser tests. Two additional findings were treated as important interaction defects: reselecting a removed file did not emit change, and the global Journal tab retained a stale place-specific filter. Reset the native input, centralize photo/error cleanup, and derive the filter from reactive URL parameters within Suspense. All four regression tests were observed failing before fixes.
+
+Review boundaries: reviewer did not independently rerun build/tests, verify live service/media licensing, deploy, or assess physical iOS keyboard behavior. Those technical checks are covered by the primary execution evidence below where available; physical-device Safari remains untested. No reviewer findings were silently deferred.
+
+## Execution decisions
+- Continue the explicitly authorized frontend branch, preserving F1 by immutable SHA/deployment; no new worktree. Cost: one branch includes both F1 and F2, review can compare029ad27 directly.
+- Follow owner-delegated design/execution decisions without an additional design approval gate. Cost: owner reviews product direction in the Draft PR/preview.
+- Shared shell/font/style work was validated and committed together rather than three isolated commits. Cost: larger implementation commit; focused modules and tests support review.
+- Same-file reselect and stale global filter were raised from minor to important because they block ordinary creation/navigation flows; both fixed, no deferred minors.
+
+Final source checks: `pnpm build` and `pnpm typecheck` pass. `pnpm test`:26 distinct pass (25 keyed fixture,1 keyless); no failed tests. Four independent-review regressions all RED→GREEN. Second browser audit14views zero console errors/overflow; live preview QA is reported in the PR with deployment SHA. Chromium software WebGL in this environment; not a physical-phone performance benchmark.

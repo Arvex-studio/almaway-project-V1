@@ -17,6 +17,14 @@ export function Composer({
     [error, setError] = useState(""),
     [confirmClose, setConfirmClose] = useState(false);
   const owned = useRef<string | undefined>(undefined);
+  const fileInput = useRef<HTMLInputElement>(null);
+  const clearPhoto = () => {
+    if (owned.current) URL.revokeObjectURL(owned.current);
+    owned.current = undefined;
+    if (fileInput.current) fileInput.current.value = "";
+    setPhoto(undefined);
+    setError("");
+  };
   useEffect(
     () => () => {
       if (owned.current) URL.revokeObjectURL(owned.current);
@@ -63,6 +71,7 @@ export function Composer({
             Твоя фотография · JPEG, PNG или WebP, до 8 МБ
           </label>
           <input
+            ref={fileInput}
             id="story-photo"
             type="file"
             accept="image/jpeg,image/png,image/webp"
@@ -99,21 +108,25 @@ export function Composer({
               <button
                 type="button"
                 className="text-action"
-                onClick={() => {
-                  if (owned.current) URL.revokeObjectURL(owned.current);
-                  owned.current = undefined;
-                  setPhoto(undefined);
-                  setError("");
-                }}
+                onClick={clearPhoto}
               >
                 Убрать фото
               </button>
             </>
           )}
           {error && (
-            <p className="form-error" role="alert">
-              {error}
-            </p>
+            <div>
+              <p className="form-error" role="alert">
+                {error}
+              </p>
+              <button
+                type="button"
+                className="text-action"
+                onClick={clearPhoto}
+              >
+                Продолжить без фото
+              </button>
+            </div>
           )}
           <label htmlFor="story-place">Место</label>
           <select
