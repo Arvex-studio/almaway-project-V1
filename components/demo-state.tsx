@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { place } from '@/lib/almaway-data'
 
 const SavedContext = createContext<{
@@ -8,9 +8,21 @@ const SavedContext = createContext<{
   toggleSaved: (slug: string) => void
 } | null>(null)
 
-// Session-only demo state. Replace this boundary with persistence in the next phase.
 export function DemoStateProvider({ children }: { children: ReactNode }) {
-  const [savedSlugs, setSavedSlugs] = useState<string[]>([place.slug])
+  const [savedSlugs, setSavedSlugs] = useState<string[]>([])
+  const [loaded, setLoaded] = useState(false)
+  useEffect(() => {
+    try {
+      const stored: unknown = JSON.parse(localStorage.getItem('almaway.guard.places.v1') ?? '[]')
+      if (Array.isArray(stored)) setSavedSlugs(stored.filter(item => typeof item === 'string'))
+    } catch {}
+    setLoaded(true)
+  }, [])
+  useEffect(() => {
+    if (loaded) {
+      try { localStorage.setItem('almaway.guard.places.v1', JSON.stringify(savedSlugs)) } catch {}
+    }
+  }, [loaded, savedSlugs])
   return <SavedContext.Provider value={{ savedSlugs, toggleSaved: slug => setSavedSlugs(values => values.includes(slug) ? values.filter(value => value !== slug) : [...values, slug]) }}>{children}</SavedContext.Provider>
 }
 

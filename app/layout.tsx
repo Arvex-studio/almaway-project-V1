@@ -1,16 +1,17 @@
 import type { Metadata, Viewport } from 'next'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import './globals.css'
+import './guard.css'
 import { DemoStateProvider } from '@/components/demo-state'
 
 export const metadata: Metadata = {
-  title: 'AlmaWay — открывай места рядом',
-  description: 'Природа ближе, чем кажется.',
+  title: 'Almaway Guard AI — подготовка к походу',
+  description: 'Горные маршруты Алматы, план дня, погода и снаряжение.',
 }
 
 export const viewport: Viewport = {
   colorScheme: 'light',
-  themeColor: '#f7faf8',
+  themeColor: '#FCF8F1',
 }
 
 export default function RootLayout({

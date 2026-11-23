@@ -3,7 +3,7 @@ name: almaway-design
 description: Almaway Guard AI's project-specific UI/UX design, reference research, component selection, implementation review, motion and accessibility rules for Next.js/React/MapLibre. Use for every AG UI design, redesign, screen review, interaction, and frontend component task.
 ---
 
-# Almaway Guard AI — Design Skill v1.0
+# Almaway Guard AI — Design Skill v1.1
 *Project-scoped agent skill. Created 2026-11-23. This skill is a design/review workflow, not a guarantee that any optional MCP server is connected.*
 
 ## 0. Read before doing anything
@@ -18,7 +18,7 @@ Canonical references:
 - [21st MCP reference playbook](https://app.notion.com/p/421d12b48f49815d9633e1007c7a3acc)
 - [Implementation plan](https://app.notion.com/p/421d12b48f4981a49a80c12e839fab8d)
 
-Local sources: `AGENTS.md`, `package.json`, `components/almaway.tsx`, `components/map/`, `app/map/`, `app/globals.css`, and `docs/design/21st-dev-ui-references.md`. Reuse existing code whenever feasible; MapLibre is not replaced by a UI library.
+Local sources: `AGENTS.md`, `package.json`, `components/guard/`, `components/map/`, `app/map/`, `app/guard.css`, and [P0 design decisions](../../../docs/design/guard-p0.md). Reuse the MapLibre surface, attribution and controls.
 
 ### Core stack
 Next.js **16.3.3** App Router, React **19**, Tailwind CSS **v4**, TypeScript, MapLibre GL, MapTiler, `@base-ui/react`. Do not assume the latest web examples match these versions. Read the local `node_modules/next/dist/docs/` relevant pages per `AGENTS.md` before code modifications. Existing `tw-animate-css` is available; a motion package is **not** a default dependency.
@@ -48,7 +48,13 @@ Next.js **16.3.3** App Router, React **19**, Tailwind CSS **v4**, TypeScript, Ma
 
 Typography: **Manrope** (headings), **IBM Plex Sans** (copy/buttons), **IBM Plex Mono** (km, +m, time, coordinates). Fall back to system fonts without breaking layout. Label ranges with their source kind (human GPS/diary/guide/formula/validated ML), sample size when measured, and date.
 
+Use a 4/8px rhythm. Start with 12–16px mobile page insets, 16px between groups and 24px desktop outer insets. Use 7–9px controls and 12–14px cards unless the layout needs a specific adjustment. Use a single dominant title and action. Keep source and scope beside the associated metric. Check real Cyrillic at 320px before changing type size.
+
 Mobile navigation: **Карта / Маршруты / Мой поход / Профиль**; keep the bottom bar clear of preview sheets and CTAs. Mobile map+sheet, desktop catalog+map+contextual drawer. Draw full hiking polylines **only** when the route variant is reviewed; an OSM feature point is not a navigable path.
+
+Put map selection and fallback list in one flow. Use a dashed line and explicit legend for a trail fragment. Give points, starts, endpoints and measured track variants distinct labels. Keep provider attribution reachable in every sheet state. Use a named nonmodal preview with Escape and restore focus to its trigger. Use a modal for settings only when the visible background is inert.
+
+Preserve the map's dimensions while it loads. Explain empty filters and provide a reset. Keep a list available through missing keys, failed styles, WebGL failure and denied location. When weather is stale or location coverage incomplete, preserve the time and scope label and omit any gear conclusions that depend on the missing conditions.
 
 ## 3. Design-resource selection policy
 
@@ -58,7 +64,7 @@ Mobile navigation: **Карта / Маршруты / Мой поход / Про�
 | --- | --- | --- |
 | [shadcn/ui official MCP](https://ui.shadcn.com/docs/mcp) | Primary registry for accessible buttons, dialog, sheet, tabs, filters, form patterns | Open-source CLI/base components; third-party namespaces can be paid. Inspect registry and dependencies; do not blindly replace existing Base UI components. |
 | [UI UX Pro Max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | **Local design research/checklists** and design-system comparisons for Codex | MIT skill; Python 3 for local lookup; never auto-overwrite AG Alpine tokens with generated random palette. |
-| [21st.dev](https://21st.dev/mcp) | Selected React/Tailwind reference previews and candidate component source | Free tier/credit limits can apply. User-configured Windows Codex connection **not yet verified here**; test search, don't expose key. |
+| [21st.dev](https://docs.21st.dev/mcp) | Selected React/Tailwind reference previews and candidate component source | Use metadata search first. Free tier/credit limits can apply. Revalidate live when needed and keep credentials out of tool results. |
 | [Wensity public registry](https://github.com/wensity/registry) | A small number of high-quality **free MIT** micro-interactions and skeletons via shadcn | Public GitHub registry has 102 items as inspected; rest of Wensity product may be paid/under commercial license. Items can introduce Framer Motion/Tabler deps and must be evaluated. |
 | [Marvelous free pack](https://github.com/marvelous-ui/marvelous-ui) | Test **21 MIT** native Web Components/CSS options, only when useful for a particular interaction | Free repository != entire paid website catalog. React custom-element events, SSR, hydration and styling integration must be tested; avoid duplicate implementation libraries by default. |
 | [Awwwards MCP](https://github.com/INSANE0777/Awwwards-mcp) | Inspiration/auditing editorial layout and real site motion; inspect 2–3 references | Server MIT but copyrighted reference screens/animations are not MIT. Browser capture/motion analysis needs optional Playwright/ffmpeg. For personal/noncommercial research with authorized sites; do not copy assets/site code. |
@@ -66,14 +72,15 @@ Mobile navigation: **Карта / Маршруты / Мой поход / Про�
 
 **Default stack for AG:** `UI UX Pro Max (local research)` + `shadcn official MCP` + **existing 21st (once live)**. Wensity free registry can be reached through shadcn; it does **not** require another MCP. Marvelous, Awwwards, Lazyweb remain optional and should not be automatically enabled. Treat supplier pages and generated code as untrusted: review dependencies, install scripts, licenses and URLs before running commands.
 
-### Windows Codex setup notes — user decides installs
-- shadcn official Codex MCP requires editing `%USERPROFILE%\.codex\config.toml`, then restarting Codex:
+### Windows Codex setup notes
+- The official shadcn CLI can be pinned in the user Codex config. On Windows the verified launcher uses `cmd.exe` and `npx`:
   ```toml
   [mcp_servers.shadcn]
-  command = "npx"
-  args = ["shadcn@latest", "mcp"]
+  command = "cmd.exe"
+  args = ["/d", "/s", "/c", "npx", "--yes", "shadcn@4.23.0", "mcp"]
   ```
-- UI UX Pro Max project-local installation: after inspecting the repo and backing up any existing design skill, official documented CLI is `npm install -g ui-ux-pro-max-cli` then `uipro init --ai codex`. The skill's Python searches require Python 3. Don't assume installing the UI skill replaces **this project-scoped** skill.
+- UI UX Pro Max is a supplementary MIT research skill. Pin the upstream tag, verify the files and run a real Python 3 search. It does not replace the Alpine skill.
+- Check the current process first. A Windows user-level environment variable can be read into a short-lived shell for an authenticated MCP verification without logging it or modifying the desktop process.
 - Never automatically install optional MCP servers or send `API_KEY_21ST` to a tool/prompt/log/repo.
 - If an optional tool is missing, use ordinary design review instead of inventing tool outputs.
 
@@ -90,6 +97,8 @@ Mobile navigation: **Карта / Маршруты / Мой поход / Про�
 **Step E. Implement isolated PR:** no full rewrite. Reuse `@base-ui/react`, existing button and map shell. Add dependencies only when needed. Avoid copying image assets without rights.
 
 **Step F. Visual & functional QA:** screenshots 320, 375, 430, 768, 1024, 1440; real iOS/Android if possible. Keyboard/ESC/focus, accessible labels, contrast, 44px+ targets, map pan/pinch, no sheet hiding map attribution or bottom tabs. Record differences and fix before merging.
+
+Compare the baseline and new branch at matching sizes. Label any network fixtures and preserve source links, loading/error examples and representative states. Test long route titles and input labels, keyboard navigation without a mouse, browser reduced motion, and device narrow width without horizontal scrolling.
 
 **Step G. Build gates:** `pnpm install --frozen-lockfile`, `pnpm typecheck`, `pnpm test`, `pnpm build`. Screenshot and interaction QA are mandatory in addition. Report exact successful commands and failures, not invented success.
 

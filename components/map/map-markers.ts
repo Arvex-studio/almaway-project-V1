@@ -18,7 +18,7 @@ export function createMarkerRenderer(map: LibreMap, current: () => MapSurfacePro
     if (props.showPlaces === false) { clear(); return }
     const visible = new Set<string>()
     const features: Pick<MapGeoJSONFeature, 'geometry' | 'properties'>[] = map.queryRenderedFeatures({ layers: ['almaway-place-points', 'almaway-cluster-points'] })
-    const selectedPlace = props.places.find(place => place.slug === props.selectedSlug)
+    const selectedPlace = props.places.find(place => place.slug === props.selection?.slug)
     if (selectedPlace && !features.some(feature => feature.properties.slug === selectedPlace.slug)) {
       features.push({ geometry: { type: 'Point', coordinates: [...selectedPlace.coordinates] }, properties: { slug: selectedPlace.slug } })
     }
@@ -45,7 +45,7 @@ export function createMarkerRenderer(map: LibreMap, current: () => MapSurfacePro
         button.addEventListener('click', async event => {
           event.stopPropagation()
           if (disposed) return
-          if (!cluster) { current().onSelect(slug); return }
+          if (!cluster) { current().onSelect(slug, button); return }
           try {
             const source = map.getSource('almaway-places') as GeoJSONSource
             const zoom = await source.getClusterExpansionZoom(Number(data.cluster_id))
@@ -63,7 +63,7 @@ export function createMarkerRenderer(map: LibreMap, current: () => MapSurfacePro
         entry.button.textContent = String(data.point_count)
         entry.button.setAttribute('aria-label', `${data.point_count} мест: увеличить масштаб`)
       } else {
-        const selected = props.selectedSlug === slug
+        const selected = props.selection?.slug === slug
         const saved = props.savedSlugs.includes(slug)
         entry.button.className = `map-pin ${selected ? 'selected' : saved ? 'saved' : ''}`
         entry.button.setAttribute('aria-label', `Открыть место: ${place!.title}`)

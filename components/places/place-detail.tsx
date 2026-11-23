@@ -1,144 +1,29 @@
-'use client'
-
 import Link from 'next/link'
+import { ArrowLeft, ArrowRight, ArrowUpRight, MapPin } from 'lucide-react'
 import { SaveButton } from '@/components/demo-state'
-import { DemoAction } from '@/components/future/demo-dialog'
-import { ChevronLeft, Clock3, Compass, MapPin, Mountain, Route, Send, ShieldCheck, Sparkles, Car, Navigation } from 'lucide-react'
-import { AppShell, MetricItem, InfoSection, detailIcons } from '@/components/almaway'
-import { place as lake, type PlaceDetails } from '@/lib/almaway-data'
+import { GuardShell } from '@/components/guard/shell'
+import { guardRoutes } from '@/lib/guard/routes'
+import type { TouristPlace } from '@/lib/tourist-places'
 
-export default function PlaceDetail({ place = lake }: { place?: PlaceDetails }) {
-  const isLake = place.slug === lake.slug
-
-  return (
-    <AppShell className="detail-shell">
-      <main className="detail-page">
-        <div className="hero-photo" style={{ backgroundImage: place.image ? `url(${place.image})` : undefined }}>
-          <div className="hero-top">
-            <Link href="/map" className="floating-icon" aria-label="Назад">
-              <ChevronLeft />
-            </Link>
-            <div>
-              <DemoAction className="floating-icon" label="Поделиться" title="Поделиться" description={`Ссылка на место: /places/${place.slug}`}><Send /></DemoAction>
-              <SaveButton slug={place.slug} title={place.title} className="floating-icon"><MapPin /></SaveButton>
-            </div>
-          </div>
-          <div className="hero-caption">
-            <span>{place.region}</span>
-            <h1>{place.title}</h1>
-          </div>
-        </div>
-
-        <div className="detail-body">
-          <p className="lead">{place.description}</p>
-
-          <div className="metrics-scroll">
-            {place.metrics.map(metric => {
-              const Icon = detailIcons[metric.key as keyof typeof detailIcons]
-              return (
-                <MetricItem
-                  key={metric.key}
-                  icon={Icon}
-                  label={metric.label}
-                  value={metric.value}
-                />
-              )
-            })}
-          </div>
-
-          {isLake && <div className="season-note">
-            <Compass />
-            <div>
-              <span>Лучшее время</span>
-              <strong>Май — октябрь · утром меньше людей</strong>
-            </div>
-            <b>≈ 8 000 ₸</b>
-          </div>}
-
-          <div className="action-grid">
-            <SaveButton slug={place.slug} title={place.title} />
-            <Link href="/plan" className="primary-button">Спланировать</Link>
-            <Link href="/plan" className="secondary-button">
-              <Sparkles /> Спросить AI
-            </Link>
-          </div>
-
-          <InfoSection icon={Route} title="Почему стоит поехать">
-            {place.why}
-          </InfoSection>
-
-          {isLake && <><InfoSection icon={Car} title="Как добраться">
-            Из Алматы по улице Дулати до поста нацпарка. Последние 8 км — пешком или на экотранспорте.
-          </InfoSection>
-
-          <div className="info-grid">
-            <InfoTile icon={Car} title="Транспорт" text="Авто + шаттл" />
-            <InfoTile icon={ShieldCheck} title="Безопасность" text="Погода меняется быстро" />
-            <InfoTile icon={Mountain} title="Что взять" text="Вода, ветровка, SPF" />
-            <InfoTile icon={Clock3} title="Выход" text="До 08:00" />
-          </div>
-
-          <div className="route-preview">
-            <div className="route-line">
-              <i />
-              <i />
-              <i />
-              <i />
-            </div>
-            <div>
-              <span>Пеший участок</span>
-              <strong>Визит-центр → озеро</strong>
-              <small>4,2 км в одну сторону · плавный подъём</small>
-            </div>
-            <Navigation />
-          </div>
-
-          <section className="nearby">
-            <div className="section-head">
-              <h2>Рядом по пути</h2>
-              <Link href="/explore">Все места</Link>
-            </div>
-            <div className="nearby-card">
-              <div>
-                <small>По пути</small>
-                <strong>Космостанция</strong>
-                <span>6 км</span>
-              </div>
-              <div>
-                <small>Водопад</small>
-                <strong>Аюсай</strong>
-                <span>11 км</span>
-              </div>
-            </div>
-          </section>
-
-          <section className="community-block">
-            <h2>Глазами путешественников</h2>
-            <div className="community-row">
-              <div className="people">
-                <span>AM</span>
-                <span>DI</span>
-                <span>+38</span>
-              </div>
-              <div>
-                <strong>4,8</strong>
-                <span>126 отзывов</span>
-              </div>
-              <DemoAction title="Отзывы" description="Добавление отзывов появится после подключения аккаунтов."><Navigation /> Добавить</DemoAction>
-            </div>
-          </section></>}
-        </div>
-      </main>
-    </AppShell>
-  )
-}
-
-function InfoTile({ icon: Icon, title, text }: { icon: typeof Car; title: string; text: string }) {
-  return (
-    <div className="info-tile">
-      <Icon />
-      <strong>{title}</strong>
-      <span>{text}</span>
-    </div>
-  )
+export default function PlaceDetail({ place }: { place: TouristPlace }) {
+  const routes = guardRoutes.filter(route => route.mapPlace === place.slug)
+  return <GuardShell><div className="ag-page ag-page-narrow">
+    <Link href={`/map?place=${place.slug}`} className="ag-back"><ArrowLeft aria-hidden="true" />На карту</Link>
+    <header className="ag-page-header"><span className="ag-kicker">{place.region} · {place.category}</span><h1>{place.title}</h1></header>
+    <section className="ag-card ag-panel">
+      <h2><MapPin aria-hidden="true" /> Точка на карте</h2>
+      <p>Координаты описывают географический объект. Начало тропы, доступ и условия проверяйте отдельно.</p>
+      <p className="ag-code">{place.coordinates[1].toFixed(5)}° N · {place.coordinates[0].toFixed(5)}° E</p>
+      <p>Дата извлечения: {place.coordinateSource.retrievedAt}</p>
+      <div className="ag-actions">
+        <a className="ag-source" href={place.coordinateSource.url} target="_blank" rel="noreferrer">OpenStreetMap<ArrowUpRight aria-hidden="true" /></a>
+        <SaveButton slug={place.slug} title={place.title} className="ag-button ag-button-secondary" />
+      </div>
+    </section>
+    <section className="ag-card ag-panel ag-place-related">
+      <h2>Рядом в каталоге</h2>
+      {routes.length ? routes.map(route => <Link key={route.id} className="ag-source" href={`/routes/${route.id}`}>{route.title}<ArrowRight aria-hidden="true" /></Link>) :
+        <p>Для этого места пока нет отдельной карточки маршрута.</p>}
+    </section>
+  </div></GuardShell>
 }

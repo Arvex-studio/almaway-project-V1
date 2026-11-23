@@ -80,7 +80,7 @@ export default function MapLibreSurface(props: MapSurfaceProps & { ref?: Ref<Map
       return
     }
     mapRef.current = map
-    map.addControl(new AttributionControl({ compact: true, customAttribution: '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a>' }), 'bottom-left')
+    map.addControl(new AttributionControl({ compact: true }), 'bottom-left')
     const markers = createMarkerRenderer(map, () => current.current)
     markersRef.current = markers
     const onLoad = () => {
@@ -101,7 +101,7 @@ export default function MapLibreSurface(props: MapSurfaceProps & { ref?: Ref<Map
       map.addLayer({
         id: 'almaway-route-lines', type: 'line', source: 'almaway-routes',
         layout: { 'line-cap': 'round', 'line-join': 'round', visibility: current.current.showRoutes === false ? 'none' : 'visible' },
-        paint: { 'line-color': '#2f7d5b', 'line-width': 4, 'line-opacity': 0.85 },
+        paint: { 'line-color': '#073526', 'line-width': 4, 'line-opacity': 0.9, 'line-dasharray': [2, 1.5] },
       })
       readyRef.current = true
       setStatus('ready')
@@ -157,16 +157,32 @@ export default function MapLibreSurface(props: MapSurfaceProps & { ref?: Ref<Map
 
   useEffect(() => {
     const map = mapRef.current
-    const place = props.places.find(item => item.slug === props.selectedSlug)
-    if (!map || !readyRef.current || !place) return
-    map.easeTo({ center: [...place.coordinates], offset: [0, -Math.min(120, map.getContainer().clientHeight * 0.15)], duration: 300 })
-  }, [props.selectedSlug, props.places, status])
+    const place = props.places.find(item => item.slug === props.selection?.slug)
+    const panel = props.selectionPanel.current
+    if (!map || status !== 'ready' || !place || !panel) return
+    const stage = map.getContainer()
+    let initial = true
+    // Both elements share the map stage. Layout offsets exclude the sheet's entrance animation.
+    const observer = new ResizeObserver(() => {
+      const freeHeight = Math.min(stage.clientHeight, panel.offsetTop)
+      map.easeTo({
+        center: [...place.coordinates],
+        offset: [0, (freeHeight - stage.clientHeight) / 2],
+        zoom: initial && props.selection?.zoomIn ? Math.max(map.getZoom(), 13) : map.getZoom(),
+        duration: initial ? 300 : 0,
+      })
+      initial = false
+    })
+    observer.observe(stage)
+    observer.observe(panel)
+    return () => observer.disconnect()
+  }, [props.selection, props.places, props.selectionPanel, status])
 
 
   return <div className="map-canvas real-map" role="region" aria-label="Туристическая карта Алматинского региона">
     <div ref={container} className="map-engine" />
     {status !== 'ready' && <div className="map-message" role="status" aria-live="polite">
-      {status === 'loading' ? <strong>Загружаем карту…</strong> : <><strong>Карта пока недоступна</strong><p>Открой Открытия, чтобы посмотреть места.</p>{key && <button type="button" className="secondary-button" onClick={() => setAttempt(value => value + 1)}>Повторить</button>}<Link href="/explore" className="secondary-button">Открытия</Link></>}
+      {status === 'loading' ? <strong>Загружаем карту…</strong> : <><strong>Карта пока недоступна</strong><p>Места доступны в списке рядом с картой.</p>{key && <button type="button" className="ag-button ag-button-secondary" onClick={() => setAttempt(value => value + 1)}>Повторить</button>}<Link href="/routes" className="ag-source">Каталог маршрутов</Link></>}
     </div>}
     {notice && status === 'ready' && <div className="map-notice" role="status">{notice}<button type="button" aria-label="Закрыть сообщение" onClick={() => setNotice('')}>×</button></div>}
   </div>
