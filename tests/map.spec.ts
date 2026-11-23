@@ -125,6 +125,8 @@ test.describe('real MapLibre engine with a controlled style response', () => {
       expect(card.y + card.height).toBeLessThanOrEqual(attribution.y)
       expect(card.y + card.height).toBeLessThanOrEqual(navigation.y)
       if (width < 700) expect(card.y).toBeGreaterThanOrEqual(controls.y + controls.height)
+      await expect(sheet.getByRole('link', { name: 'Подробнее', exact: true })).toBeInViewport({ ratio: 1 })
+      await expect(sheet.getByRole('link', { name: 'План', exact: true })).toBeInViewport({ ratio: 1 })
       await expect(sheet.getByRole('link', { name: 'План', exact: true })).toHaveAttribute('href', '/plan')
     }
 

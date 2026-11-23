@@ -481,12 +481,13 @@ a {
   --sheet-bottom: calc(8.5rem + env(safe-area-inset-bottom));
   position: absolute;
   z-index: 20;
+  display: flex;
+  flex-direction: column;
   left: max(0.75rem, env(safe-area-inset-left));
   right: max(0.75rem, env(safe-area-inset-right));
   bottom: var(--sheet-bottom);
   max-height: max(9rem, calc(100% - var(--sheet-bottom) - 13.5rem));
-  overflow: auto;
-  overscroll-behavior: contain;
+  overflow: hidden;
   padding: 0.875rem 0.875rem 0.375rem;
   border: 1px solid var(--preview-sand);
   border-radius: 1.15rem;
@@ -494,6 +495,14 @@ a {
   color: var(--preview-forest);
   box-shadow: var(--shadow-float);
   animation: sheetIn 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sheet-body {
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  margin: -0.25rem -0.25rem 0;
+  padding: 0.25rem 0.25rem 0;
 }
 
 .sheet-heading {
@@ -577,8 +586,10 @@ a {
 
 .sheet-actions {
   display: flex;
+  flex-shrink: 0;
   flex-wrap: wrap;
   gap: 0.375rem;
+  margin-top: 0.25rem;
 }
 
 .place-sheet .primary-button {
@@ -615,6 +626,7 @@ a {
 
 .sheet-source {
   display: flex;
+  flex-shrink: 0;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
