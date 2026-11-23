@@ -1,5 +1,8 @@
 import { defineConfig } from '@playwright/test'
 
+const port = 3176
+const baseURL = `http://127.0.0.1:${port}`
+
 export default defineConfig({
   testDir: './tests',
   fullyParallel: false,
@@ -16,11 +19,11 @@ export default defineConfig({
   },
   projects: [{
     name: process.env.ALMAWAY_TEST_MISSING_KEY ? 'missing-key' : 'map',
-    use: { baseURL: 'http://127.0.0.1:3100' },
+    use: { baseURL },
   }],
   webServer: {
-    command: 'node scripts/prepare-maplibre.mjs && node node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port 3100',
-    url: 'http://127.0.0.1:3100',
+    command: `node scripts/prepare-maplibre.mjs && node node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port ${port}`,
+    url: baseURL,
     env: { NEXT_PUBLIC_MAPTILER_KEY: process.env.ALMAWAY_TEST_MISSING_KEY ? '' : 'almaway-test-placeholder-not-a-real-key' },
     reuseExistingServer: false,
   },
