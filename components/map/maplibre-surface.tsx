@@ -38,11 +38,6 @@ export default function MapLibreSurface(props: MapSurfaceProps & { ref?: Ref<Map
   useEffect(() => { current.current = props; markersRef.current?.render() })
 
   useImperativeHandle(props.ref, () => ({
-    focus(coordinates) {
-      const map = mapRef.current
-      if (!map || !readyRef.current) return
-      map.easeTo({ center: [...coordinates], zoom: Math.max(map.getZoom(), 13), duration: 350 })
-    },
     locate() {
       const map = mapRef.current
       if (!map || !readyRef.current) return
@@ -162,10 +157,26 @@ export default function MapLibreSurface(props: MapSurfaceProps & { ref?: Ref<Map
 
   useEffect(() => {
     const map = mapRef.current
-    const place = props.places.find(item => item.slug === props.selectedSlug)
-    if (!map || !readyRef.current || !place) return
-    map.easeTo({ center: [...place.coordinates], offset: [0, -Math.min(120, map.getContainer().clientHeight * 0.15)], duration: 300 })
-  }, [props.selectedSlug, props.places, status])
+    const place = props.places.find(item => item.slug === props.selection?.slug)
+    const panel = props.selectionPanel.current
+    if (!map || status !== 'ready' || !place || !panel) return
+    const stage = map.getContainer()
+    let initial = true
+    // Both elements share the map stage. Layout offsets exclude the sheet's entrance animation.
+    const observer = new ResizeObserver(() => {
+      const freeHeight = Math.min(stage.clientHeight, panel.offsetTop)
+      map.easeTo({
+        center: [...place.coordinates],
+        offset: [0, (freeHeight - stage.clientHeight) / 2],
+        zoom: initial && props.selection?.zoomIn ? Math.max(map.getZoom(), 13) : map.getZoom(),
+        duration: initial ? 300 : 0,
+      })
+      initial = false
+    })
+    observer.observe(stage)
+    observer.observe(panel)
+    return () => observer.disconnect()
+  }, [props.selection, props.places, props.selectionPanel, status])
 
 
   return <div className="map-canvas real-map" role="region" aria-label="Туристическая карта Алматинского региона">

@@ -185,6 +185,50 @@ test.describe('real MapLibre engine with a controlled style response', () => {
     await expect(pin).toHaveClass(/saved/)
   })
 
+  test('keeps the whole selected marker above the sheet and the source date beside its link', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 })
+    await page.goto('/map?place=bolshoe-almatinskoe-ozero')
+    const pin = page.getByRole('button', { name: 'Открыть место: Большое Алматинское озеро' })
+    const sheet = page.getByRole('region', { name: 'Большое Алматинское озеро', exact: true })
+    const source = sheet.getByRole('link', { name: 'Координаты: OpenStreetMap' })
+    const date = sheet.locator('time')
+    for (const [width, height] of [[320, 568], [390, 844], [1440, 900]]) {
+      await page.setViewportSize({ width, height })
+      await expect(pin).toBeInViewport({ ratio: 1 })
+      await expect.poll(async () => {
+        const marker = (await pin.boundingBox())!
+        const card = (await sheet.boundingBox())!
+        const map = (await page.locator('.maplibregl-canvas').boundingBox())!
+        return marker.y >= map.y && marker.y + marker.height <= card.y
+      }).toBe(true)
+      const link = (await source.boundingBox())!
+      const stamp = (await date.boundingBox())!
+      expect.soft(stamp.y + stamp.height / 2).toBeGreaterThanOrEqual(link.y)
+      expect.soft(stamp.y + stamp.height / 2).toBeLessThanOrEqual(link.y + link.height)
+      expect.soft(stamp.x).toBeGreaterThanOrEqual(link.x + link.width)
+    }
+  })
+
+  test('choosing the same place from the list frames it again after a pan', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto('/map')
+    const item = page.getByRole('region', { name: 'Список мест' }).getByRole('button', { name: /Большое Алматинское озеро/ })
+    const pin = page.getByRole('button', { name: 'Открыть место: Большое Алматинское озеро' })
+    await item.press('Enter')
+    const canvas = page.locator('.maplibregl-canvas')
+    const center = await canvas.evaluate(element => element.getBoundingClientRect().x + element.clientWidth / 2)
+    const displacement = async () => {
+      const box = (await pin.boundingBox())!
+      return Math.abs(box.x + box.width / 2 - center)
+    }
+    await expect.poll(displacement).toBeLessThan(10)
+    await canvas.press('ArrowRight')
+    await expect.poll(displacement).toBeGreaterThan(50)
+    await item.press('Enter')
+    await expect.poll(displacement).toBeLessThan(10)
+    await expect(page.getByRole('heading', { name: 'Большое Алматинское озеро' })).toBeFocused()
+  })
+
   test('opens the related route and manual preparation from the same map', async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 568 })
     await page.route('**/api/guard/weather?*', route => route.fulfill({ status: 503, json: { error: 'disabled' } }))
