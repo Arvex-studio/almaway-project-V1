@@ -13,6 +13,17 @@ Almaway Guard P0 sits on the existing V1 frontend. Keep the Alpine design and la
 - Do not add production maps, AI, authentication, or database integrations without an explicit task.
 - Keep secrets, dependencies, and build outputs out of Git.
 
+## Cross-chat handoff and evidence — REQUIRED FOR ALL AG AGENTS
+
+- At the **start** of any task read [current state](docs/coordination/PROJECT_STATE.md), [handoff protocol](docs/coordination/HANDOFF_PROTOCOL.md), and the most recent relevant files in `docs/coordination/sessions/`. Fetch current GitHub branches/PRs and Notion engineering task state before accepting a prior agent's claims.
+- The canonical Notion engineering log is [AG Engineering Control Room](https://app.notion.com/p/421d12b48f49813ba5d4cc384c252938); tasks live in [AG Release Task Board](https://app.notion.com/p/421d12b48f4981a19b74d2256a08449d). Product specs remain in [ALMAWAY HQ](https://app.notion.com/p/421d12b48f49811ba465d5fd175f3e05).
+- At **every meaningful session end / PR update**, commit a NEW uniquely named report `docs/coordination/sessions/YYYY-MM-DDTHH-mm+05-<agent>-<topic>.md` including actual Asia/Almaty time, branch+before/after SHAs, files changed, PR/preview, tests actually run, screenshots/evidence links, blockers, decisions and next owner. Don't edit another agent's session report.
+- Create a corresponding dated **Notion child log** in AG Engineering Control Room and update **existing** task statuses with evidence. If Notion is unavailable, note `Notion sync pending` in the GitHub report and inform the owner; never claim it was updated.
+- The **PR integration owner only** updates `docs/coordination/PROJECT_STATE.md` after live GitHub verification. Other agents record their own work and recommend changes in the session report to prevent races.
+- Keep one canonical Guard MapLibre implementation. For PR #8 and #9, work on **PR #9** as the Guard P0 base; compare same-viewport visuals before adapting proven PR #8 patterns. Do not merge/close PRs, deploy publicly, make paid calls or enable emergency automation without explicit owner approval.
+- A local test passing, a reported 14/14 result, a Vercel build, an approved PR and a publicly released app are different states. Never conflate them. Use exact evidence and note what was **not** checked.
+
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 # This is NOT the Next.js you know
