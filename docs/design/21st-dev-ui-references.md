@@ -1,12 +1,13 @@
 # Almaway Guard AI — 21st.dev MCP UI reference policy
-**Status:** research and component-integration instructions only; 21st MCP connection in owner's Windows Codex has not yet been verified.  
+**Status:** the configured endpoint responded to authenticated MCP metadata searches in Windows. [Recorded searches and decisions](guard-p0.md).
+
 **Updated:** 2026-11-23 · **Owner:** AG CEO/CTO
 
 See [Notion 21st.dev Playbook](https://app.notion.com/p/421d12b48f49815d9633e1007c7a3acc) and [UX Blueprint V3](https://app.notion.com/p/421d12b48f49817d9c38c8f748b94a5c).
 
 ## First: test the connection, don't pretend
 
-The owner says the `21st` MCP config exists and their Windows user environment has `API_KEY_21ST`. This does **not** yet prove a working MCP connection. Restart Codex completely so the new environment is loaded. Check `codex mcp list` for configuration, and then make a **real 21st MCP tool call**, such as `search`. The current tool names must be read from the actual Codex `tools/list` output. Never print or commit the key or include its value in logs, screenshots or prompts.
+Check `codex mcp list` for configuration, then make a **real 21st MCP tool call**, such as `search`. The Windows user-level `API_KEY_21ST` can be read into a short-lived shell for verification when the running desktop process has an older environment. Use the tool schema returned by `tools/list`. Keep the key out of logs, screenshots, prompts and commits.
 
 Official: https://docs.21st.dev/mcp ; https://github.com/21st-dev/magic-mcp/blob/main/llms-install.md
 
@@ -24,7 +25,7 @@ Target 21st searches:
 
 First make a shortlist of **2–3 references per surface** with exact title/URL, author, license, dependencies and accessibility notes. Search is free; code retrieval/install has free-tier limits and generating UI may consume AI credits. Get code only for a carefully selected candidate.
 
-## Proposed first PRs (not yet approved or implemented)
+## Interaction review targets
 
 1. Accessible `RoutePreviewSheet`: adapt the existing `PlacePreviewSheet`, not replace the map. Support full and fragment route data correctly, local sources and freshness, overlay vs tab-bar spacing, screen-reader focus, touch dragging only if robust.
 2. `PackingChecklist`: conditional categories (must bring / weather-dependent / useful / optional), proper explanation of each item, clear checked state; no “safe” guarantee or confetti.
