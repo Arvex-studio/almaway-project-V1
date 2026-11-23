@@ -45,7 +45,7 @@ export function createMarkerRenderer(map: LibreMap, current: () => MapSurfacePro
         button.addEventListener('click', async event => {
           event.stopPropagation()
           if (disposed) return
-          if (!cluster) { current().onSelect(slug); return }
+          if (!cluster) { current().onSelect(slug, button); return }
           try {
             const source = map.getSource('almaway-places') as GeoJSONSource
             const zoom = await source.getClusterExpansionZoom(Number(data.cluster_id))

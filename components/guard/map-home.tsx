@@ -1,23 +1,27 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight, Compass, MapPin, Mountain, Search, X } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { ArrowRight, ArrowUpRight, Bookmark, Compass, MapPin, Mountain, Search, X } from 'lucide-react'
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { MapControls } from '@/components/almaway'
 import { DemoDialog } from '@/components/future/demo-dialog'
 import { MapSurface, type MapSurfaceHandle } from '@/components/map/map-surface'
-import { useDemoSaved } from '@/components/demo-state'
+import { SaveButton, useDemoSaved } from '@/components/demo-state'
 import { demoRoute } from '@/lib/demo-route'
 import { guardRoutes } from '@/lib/guard/routes'
 import { filterTouristPlaces, getTouristPlace, type MapFilter } from '@/lib/tourist-places'
 import { GuardShell } from './shell'
 
 const filters: readonly MapFilter[] = ['Рядом', 'Горы', 'Озёра']
+const sourceDate = new Intl.DateTimeFormat('ru-RU', { dateStyle: 'short', timeZone: 'UTC' })
 
 export function MapHome({ initialPlace }: { initialPlace?: string }) {
   const map = useRef<MapSurfaceHandle>(null)
-  const sheet = useRef<HTMLElement>(null)
-  const trigger = useRef<HTMLElement | null>(null)
+  const engine = useRef<HTMLDivElement>(null)
+  const content = useRef<HTMLDivElement>(null)
+  const heading = useRef<HTMLHeadingElement>(null)
+  const titleId = useId()
+  const trigger = useRef<{ button: HTMLButtonElement; fromMap: boolean } | null>(null)
   const search = useRef<HTMLInputElement>(null)
   const [selectedSlug, setSelectedSlug] = useState(initialPlace ?? null)
   const [query, setQuery] = useState('')
@@ -33,24 +37,40 @@ export function MapHome({ initialPlace }: { initialPlace?: string }) {
   const selected = selectedSlug ? getTouristPlace(selectedSlug) : undefined
   const areaRoutes = guardRoutes.filter(route => route.mapPlace === selectedSlug)
 
-  function select(slug: string, center = false) {
-    trigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
+  const focusPreview = useCallback(() => {
+    const stage = engine.current
+    if (stage && window.matchMedia('(max-width: 819px)').matches) {
+      const mapBounds = stage.getBoundingClientRect()
+      const navigation = stage.closest('.ag')?.querySelector('.ag-nav')?.getBoundingClientRect()
+      if (navigation && (mapBounds.bottom > navigation.top || mapBounds.top < 0)) {
+        stage.scrollIntoView({ block: 'start', behavior: 'instant' })
+      }
+    }
+    content.current?.scrollTo({ top: 0 })
+    heading.current?.focus({ preventScroll: true })
+  }, [])
+
+  function select(slug: string, button: HTMLButtonElement, fromMap = true) {
+    trigger.current = { button, fromMap }
     setSelectedSlug(slug)
-    if (center) {
+    if (!fromMap) {
       const place = getTouristPlace(slug)
       if (place) map.current?.focus(place.coordinates)
     }
+    if (selectedSlug === slug) focusPreview()
   }
 
   function close() {
     setSelectedSlug(null)
-    if (trigger.current?.isConnected) trigger.current.focus()
+    const origin = trigger.current
+    trigger.current = null
+    if (origin?.button.isConnected) origin.button.focus({ preventScroll: origin.fromMap })
     else search.current?.focus()
   }
 
   useEffect(() => {
-    if (selectedSlug && trigger.current) sheet.current?.focus()
-  }, [selectedSlug])
+    if (selectedSlug) focusPreview()
+  }, [selectedSlug, focusPreview])
 
   useEffect(() => {
     if (!ready || !initialPlace) return
@@ -58,7 +78,12 @@ export function MapHome({ initialPlace }: { initialPlace?: string }) {
     if (place) map.current?.focus(place.coordinates)
   }, [ready, initialPlace])
 
-  return <GuardShell><div className="ag-map-layout">
+  return <GuardShell><div className="ag-map-layout" onKeyDown={event => {
+    if (event.key === 'Escape' && selected && !layersOpen) {
+      event.preventDefault()
+      close()
+    }
+  }}>
     <header className="ag-map-intro">
       <span className="ag-kicker"><Compass aria-hidden="true" /> Заилийский Алатау</span>
       <h1>Карта маршрутов</h1>
@@ -72,21 +97,35 @@ export function MapHome({ initialPlace }: { initialPlace?: string }) {
       </div>
     </header>
     <section className="ag-map-stage" aria-label="Интерактивная карта Алматы">
-      <div className="ag-map-engine">
+      <div className="ag-map-engine" ref={engine}>
         <MapSurface ref={map} places={places} selectedSlug={selectedSlug} savedSlugs={savedSlugs} onSelect={select}
           onReadyChange={setReady} showPlaces={showPlaces} routes={demoRoute} showRoutes={showRoutes} />
         {ready && <MapControls onLayers={() => setLayersOpen(true)} onLocate={() => map.current?.locate()} />}
-        {selected && <section className="ag-map-sheet" ref={sheet} tabIndex={-1} aria-label="Выбранное место"
-          onKeyDown={event => { if (event.key === 'Escape') close() }}>
-          <div className="ag-map-sheet-heading">
-            <div><p className="ag-kicker">{selected.category} · точка OSM</p><h2>{selected.title}</h2></div>
-            <button className="ag-icon-button" type="button" aria-label="Закрыть карточку" onClick={close}><X aria-hidden="true" /></button>
+        {selected && <section className="ag-map-sheet" aria-labelledby={titleId}>
+          <div className="ag-map-sheet-content" ref={content}>
+            <header className="ag-map-sheet-heading">
+              <div><p className="ag-kicker">{selected.category} · точка OSM</p>
+                <h2 id={titleId} ref={heading} tabIndex={-1}>{selected.title}</h2></div>
+              <button className="ag-icon-button" type="button" aria-label="Закрыть карточку" onClick={close}><X aria-hidden="true" /></button>
+            </header>
+            <p className="ag-map-sheet-status">Полного проверенного маршрута пока нет.</p>
+            <p>Начало тропы и доступ уточняйте отдельно.</p>
+            {areaRoutes.length > 0 && <ul className="ag-map-related" aria-label="Варианты из каталога">
+              {areaRoutes.map(route => <li key={route.id}><Link href={`/routes/${route.id}`} className="ag-source">{route.title}<ArrowRight aria-hidden="true" /></Link></li>)}
+            </ul>}
           </div>
-          <p>Географическая точка. Начало тропы и доступ уточняйте отдельно.</p>
-          <div className="ag-map-sheet-actions">
-            {areaRoutes.map(route => <Link key={route.id} href={`/routes/${route.id}`} className="ag-button ag-button-secondary">{route.title}<ArrowRight aria-hidden="true" /></Link>)}
-            <Link href={`/places/${selected.slug}`} className={areaRoutes.length ? 'ag-source' : 'ag-button ag-button-secondary'}>Подробнее<ArrowRight aria-hidden="true" /></Link>
-          </div>
+          <footer className="ag-map-sheet-footer">
+            <div className="ag-map-sheet-actions">
+              <Link href={`/places/${selected.slug}`} className="ag-button">Подробнее<ArrowRight aria-hidden="true" /></Link>
+              <SaveButton slug={selected.slug} title={selected.title} className="ag-icon-button"><Bookmark aria-hidden="true" /></SaveButton>
+            </div>
+            <div className="ag-map-sheet-source">
+              <a href={selected.coordinateSource.url} className="ag-source" target="_blank" rel="noreferrer">
+                Координаты: {selected.coordinateSource.provider}<ArrowUpRight aria-hidden="true" />
+              </a>
+              <span>Данные от <time dateTime={selected.coordinateSource.retrievedAt}>{sourceDate.format(new Date(selected.coordinateSource.retrievedAt))}</time></span>
+            </div>
+          </footer>
         </section>}
       </div>
       <footer className="ag-map-legend">
@@ -97,7 +136,7 @@ export function MapHome({ initialPlace }: { initialPlace?: string }) {
     <section className="ag-map-list" aria-label="Список мест">
       <div className="ag-map-list-heading"><h2>Места на карте</h2><span role="status" className="ag-code" aria-label="Количество мест">{places.length}</span></div>
       {places.length ? <ul>{places.map(place => <li key={place.slug}>
-        <button type="button" aria-pressed={selectedSlug === place.slug} onClick={() => select(place.slug, true)}>
+        <button type="button" aria-pressed={selectedSlug === place.slug} onClick={event => select(place.slug, event.currentTarget, false)}>
           <span className="ag-place-icon"><MapPin aria-hidden="true" /></span><span><strong>{place.title}</strong><small>{place.category}</small></span><ArrowRight aria-hidden="true" />
         </button>
       </li>)}</ul> : <p className="ag-empty-inline">Места не найдены. Измените запрос или фильтр.</p>}
