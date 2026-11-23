@@ -10,6 +10,7 @@ Phase 2B-1, не меняя hosted БД, Auth settings, deployment или сущ
 
 Прочитай актуальные HEAD/main, рабочее дерево, `AGENTS.md` и документы:
 
+- `docs/audits/supabase-phase-2b-1-2026-11-11.md` и соответствующий sanitized JSON
 - `docs/backend-contract.md`
 - `docs/backend-schema-proposal.md`
 - `docs/backend-migration-plan.md`
@@ -22,23 +23,22 @@ Phase 2B-1, не меняя hosted БД, Auth settings, deployment или сущ
 
 ## Обязательный gate проекта
 
-В последней ревизии 2B-1 через разрешённое `AlmawayV1` подтверждён project
-`almaway-project-V1`, organization `Almaway-project-V1`, ref `nwmmqtyfaumuaocspsur`.
-Статус INACTIVE; list_tables не смог подключиться, list_migrations завершился timeout.
-OAuth identity доступна; actual schema/Auth/RLS/history остаются неизвестны, БД не считать пустой.
+Завершающий read-only audit 2B-1 на main `d9ffe3ab0d2324213a2d2c6503ec88913e5e5b9a`
+подтвердил ACTIVE_HEALTHY, project `almaway-project-V1`, organization `Almaway-project-V1`,
+ref `nwmmqtyfaumuaocspsur`. Четыре application tables и application migration history
+отсутствуют; platform schemas существуют. Actual default ACL широкие, поэтому DDL/RLS/
+REVOKE/GRANT должны быть атомарны. Не создавать remote baseline/repair history.
 
-Сначала повтори read-only status/connection check на этом ref. Если проект всё ещё
-недоступен, сохрани blocked artifact с одним действием владельца: возобновить существующий
-проект через Dashboard для read-only аудита. Не выполнять Resume/Restore автоматически,
-не создавать ресурсы и не пользоваться Gridy/Qaskelen/другими проектами.
-При доступной БД сверить metadata/ref/организацию заново до schema audit.
-Не запрашивай passwords, service-role keys, SMTP/OAuth secrets или tokens в чате.
+Сначала повтори read-only metadata/schema/history recheck. При drift пересмотри delta;
+при недоступности не выполнять Resume/Restore и не использовать другой проект.
+Report допускает отдельную local подготовку Phase 2B-2, не hosted apply и не UI switch.
 
-При наличии доступа проведи read-only аудит именно AlmaWay: schema/constraints/indexes,
-policies/grants/exposed schemas/functions/views/triggers, Auth config без secrets,
-migration history и drift, advisors. Сохрани evidence с ref/временем и unknowns.
-Не выгружай PII из auth.users/sessions. Если инструмент не даёт Auth config/history,
-запиши конкретный пробел и не объявляй аудит полным.
+Public Auth settings и JWKS проверены. **Private Auth Management config не проверен:**
+site_url/redirect allowlist, Auth TTL/rotation/session policy, SMTP, hooks и security settings.
+До live Auth/callback rollout нужен sanitized read-only config/export или доступная операция
+его чтения. Это не требует passwords/service-role secrets в чате и не блокирует local
+schema/repository/client foundation при явном сохранении этого gate. Не утверждай, что
+Auth audit полный или live Auth ready; не создавай hosted users для verification.
 
 ## Реализация после успешного gate
 

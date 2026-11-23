@@ -1,0 +1,833 @@
+{
+  "format_version": 1,
+  "audit_kind": "read-only Supabase metadata and public HTTP audit",
+  "repository": "Arvex-studio/almaway-project-V1",
+  "baseline_main_sha": "d9ffe3ab0d2324213a2d2c6503ec88913e5e5b9a",
+  "contract_pr": {
+    "number": 2,
+    "merged": true,
+    "head_sha": "8ca8cbc649829023cf0479459081447ed00c98aa"
+  },
+  "observed_at_utc": {
+    "database_inventory": "2026-11-11 16:58:36.518236+00",
+    "database_detail": "2026-11-11 17:00:44.621083+00",
+    "effective_privileges": "2026-11-11 17:01:42.86468+00",
+    "function_history_check": "2026-11-11 17:02:43.539957+00",
+    "http_public_settings": "2026-11-11T17:02:10.637590Z",
+    "final_project_check": "2026-11-11T17:13:20Z",
+    "types_and_all_public_routines": "2026-11-11T17:12:55.790546Z",
+    "auth_settings_field_coverage": "2026-11-11T17:15:32.602306Z",
+    "auth_additional_public_flags": "2026-11-11T17:16:03.335983Z"
+  },
+  "display_timezone": "Asia/Qyzylorda",
+  "project": {
+    "connection_nickname": "AlmawayV1",
+    "name": "almaway-project-V1",
+    "ref": "nwmmqtyfaumuaocspsur",
+    "organization_name": "Almaway-project-V1",
+    "organization_id": "mlghjrgokzobvflbqmay",
+    "status_transition": [
+      "COMING_UP",
+      "ACTIVE_HEALTHY"
+    ],
+    "final_status": "ACTIVE_HEALTHY",
+    "region": "ap-south-1",
+    "organization_plan": "free",
+    "metadata_database_version": "17.6.1.166",
+    "sql_server_version": "17.6",
+    "api_url": "https://nwmmqtyfaumuaocspsur.supabase.co"
+  },
+  "execution": {
+    "sql_role": "postgres",
+    "sql_transaction_read_only": "off",
+    "sql_statements": "SELECT only; catalog introspection and aggregate counts",
+    "http_methods": [
+      "GET"
+    ],
+    "hosted_mutations": false,
+    "auth_flows_exercised": false,
+    "managed_storage_or_vault_routines_invoked": false,
+    "user_record_exports": false,
+    "vault_values_read": false,
+    "api_key_values_in_artifacts": false,
+    "service_role_or_secret_keys_requested": false,
+    "read_only_sql_query_count": 6,
+    "direct_http_probe_request_count": 7
+  },
+  "schemas": [
+    {
+      "acl": "{supabase_admin=UC/supabase_admin,anon=U/supabase_admin,authenticated=U/supabase_admin,service_role=U/supabase_admin,supabase_auth_admin=UC/supabase_admin,dashboard_user=UC/supabase_admin,postgres=U/supabase_admin}",
+      "owner": "supabase_admin",
+      "schema": "auth"
+    },
+    {
+      "acl": "{postgres=UC/postgres,anon=U/postgres,authenticated=U/postgres,service_role=U/postgres,dashboard_user=UC/postgres}",
+      "owner": "postgres",
+      "schema": "extensions"
+    },
+    {
+      "acl": "{supabase_admin=UC/supabase_admin,postgres=U*/supabase_admin,anon=U/supabase_admin,authenticated=U/supabase_admin,service_role=U/supabase_admin}",
+      "owner": "supabase_admin",
+      "schema": "graphql"
+    },
+    {
+      "acl": "{supabase_admin=UC/supabase_admin,postgres=U*/supabase_admin,anon=U/supabase_admin,authenticated=U/supabase_admin,service_role=U/supabase_admin}",
+      "owner": "supabase_admin",
+      "schema": "graphql_public"
+    },
+    {
+      "acl": "{pg_database_owner=UC/pg_database_owner,=U/pg_database_owner,postgres=U/pg_database_owner,anon=U/pg_database_owner,authenticated=U/pg_database_owner,service_role=U/pg_database_owner}",
+      "owner": "pg_database_owner",
+      "schema": "public"
+    },
+    {
+      "acl": "{supabase_admin=UC/supabase_admin,postgres=U*/supabase_admin,anon=U/supabase_admin,service_role=U/supabase_admin,supabase_realtime_admin=UC/supabase_admin,authenticated=U/supabase_admin}",
+      "owner": "supabase_admin",
+      "schema": "realtime"
+    },
+    {
+      "acl": "{supabase_admin=UC/supabase_admin,postgres=U*/supabase_admin,anon=U/supabase_admin,authenticated=U/supabase_admin,service_role=U/supabase_admin,supabase_storage_admin=U*C*/supabase_admin,dashboard_user=UC/supabase_admin}",
+      "owner": "supabase_admin",
+      "schema": "storage"
+    },
+    {
+      "acl": "{supabase_admin=UC/supabase_admin,postgres=U*/supabase_admin,service_role=U/supabase_admin}",
+      "owner": "supabase_admin",
+      "schema": "vault"
+    }
+  ],
+  "exposed_data_api_schemas": [
+    "public",
+    "graphql_public"
+  ],
+  "application": {
+    "relations": [],
+    "columns": [],
+    "constraints": [],
+    "indexes": [],
+    "functions": [],
+    "views": [],
+    "policies": [],
+    "triggers": [],
+    "expected_tables_present": {
+      "profiles": false,
+      "places": false,
+      "place_sources": false,
+      "saved_places": false
+    },
+    "types": [],
+    "domain_constraints": [],
+    "all_public_routines": []
+  },
+  "managed_relation_counts": {
+    "auth:r": 27,
+    "auth:S": 1,
+    "extensions:v": 2,
+    "realtime:p": 1,
+    "realtime:r": 2,
+    "realtime:S": 1,
+    "storage:r": 10,
+    "vault:v": 1,
+    "vault:r": 1
+  },
+  "functions": {
+    "total_non_catalog": 104,
+    "counts_by_schema": {
+      "auth": 4,
+      "extensions": 55,
+      "graphql_public": 1,
+      "realtime": 15,
+      "storage": 24,
+      "vault": 5
+    },
+    "public_security_definer_count": 0,
+    "exposed_graphql_function": {
+      "schema": "graphql_public",
+      "name": "graphql",
+      "security_definer": false,
+      "anon_execute": true,
+      "authenticated_execute": true,
+      "body_review": "returns a pg_graphql-not-enabled error object; no DML",
+      "definition_md5": "dfa83944e7a73368d44e3ee4d2a1167c"
+    },
+    "platform_security_definer_metadata": [
+      {
+        "acl": "{supabase_storage_admin=X/supabase_storage_admin}",
+        "kind": "f",
+        "name": "protect_active_lifecycle_states",
+        "owner": "supabase_storage_admin",
+        "schema": "storage",
+        "language": "plpgsql",
+        "arguments": "",
+        "search_path": "search_path=pg_catalog",
+        "definition_md5": "fce9d03398ec222c77feec887c25c384",
+        "extension_owned": false,
+        "security_definer": true,
+        "anon_execute": false,
+        "authenticated_execute": false
+      },
+      {
+        "acl": "{supabase_storage_admin=X/supabase_storage_admin,postgres=X/supabase_storage_admin,service_role=X/supabase_storage_admin}",
+        "kind": "f",
+        "name": "reconcile_lifecycle_state",
+        "owner": "supabase_storage_admin",
+        "schema": "storage",
+        "language": "plpgsql",
+        "arguments": "target_bucket_id text, policy_changed boolean",
+        "search_path": "search_path=pg_catalog",
+        "definition_md5": "271a57ecfb24df02a5d9100c2a801323",
+        "extension_owned": false,
+        "security_definer": true,
+        "anon_execute": false,
+        "authenticated_execute": false
+      },
+      {
+        "acl": "{supabase_storage_admin=X/supabase_storage_admin}",
+        "kind": "f",
+        "name": "wake_lifecycle_state",
+        "owner": "supabase_storage_admin",
+        "schema": "storage",
+        "language": "plpgsql",
+        "arguments": "",
+        "search_path": "search_path=pg_catalog",
+        "definition_md5": "326028b9d567ca2de47e9ecf67a4553b",
+        "extension_owned": false,
+        "security_definer": true,
+        "anon_execute": false,
+        "authenticated_execute": false
+      },
+      {
+        "acl": "{supabase_admin=X/supabase_admin,postgres=X*/supabase_admin,service_role=X/supabase_admin}",
+        "kind": "f",
+        "name": "create_secret",
+        "owner": "supabase_admin",
+        "schema": "vault",
+        "language": "plpgsql",
+        "arguments": "new_secret text, new_name text, new_description text, new_key_id uuid",
+        "search_path": "search_path=\"\"",
+        "definition_md5": "3cd3211da1236685869a58787071c534",
+        "extension_owned": true,
+        "security_definer": true,
+        "anon_execute": false,
+        "authenticated_execute": false
+      },
+      {
+        "acl": "{supabase_admin=X/supabase_admin,postgres=X*/supabase_admin,service_role=X/supabase_admin}",
+        "kind": "f",
+        "name": "update_secret",
+        "owner": "supabase_admin",
+        "schema": "vault",
+        "language": "plpgsql",
+        "arguments": "secret_id uuid, new_secret text, new_name text, new_description text, new_key_id uuid",
+        "search_path": "search_path=\"\"",
+        "definition_md5": "dab0a8cc49e4b57f27bfa5dca12a705c",
+        "extension_owned": true,
+        "security_definer": true,
+        "anon_execute": false,
+        "authenticated_execute": false
+      }
+    ],
+    "body_review_scope": "graphql placeholder and five platform SECURITY DEFINER functions; metadata for all non-catalog functions",
+    "non_internal_triggers": [
+      {
+        "table": "subscription",
+        "schema": "realtime",
+        "enabled": "O",
+        "trigger": "tr_check_filters",
+        "function": "subscription_check_filters",
+        "function_schema": "realtime"
+      },
+      {
+        "table": "buckets",
+        "schema": "storage",
+        "enabled": "O",
+        "trigger": "enforce_bucket_name_length_trigger",
+        "function": "enforce_bucket_name_length",
+        "function_schema": "storage"
+      },
+      {
+        "table": "buckets",
+        "schema": "storage",
+        "enabled": "O",
+        "trigger": "enforce_versioning_status_transition",
+        "function": "enforce_versioning_status_transition",
+        "function_schema": "storage"
+      },
+      {
+        "table": "buckets",
+        "schema": "storage",
+        "enabled": "O",
+        "trigger": "protect_active_lifecycle_states",
+        "function": "protect_active_lifecycle_states",
+        "function_schema": "storage"
+      },
+      {
+        "table": "buckets",
+        "schema": "storage",
+        "enabled": "O",
+        "trigger": "protect_bucket_control_insert",
+        "function": "protect_bucket_control_columns",
+        "function_schema": "storage"
+      },
+      {
+        "table": "buckets",
+        "schema": "storage",
+        "enabled": "O",
+        "trigger": "protect_bucket_control_update",
+        "function": "protect_bucket_control_columns",
+        "function_schema": "storage"
+      },
+      {
+        "table": "buckets",
+        "schema": "storage",
+        "enabled": "O",
+        "trigger": "protect_bucket_control_update_role",
+        "function": "enforce_bucket_lifecycle_service_role",
+        "function_schema": "storage"
+      },
+      {
+        "table": "buckets",
+        "schema": "storage",
+        "enabled": "O",
+        "trigger": "protect_buckets_delete",
+        "function": "protect_delete",
+        "function_schema": "storage"
+      },
+      {
+        "table": "buckets",
+        "schema": "storage",
+        "enabled": "O",
+        "trigger": "wake_lifecycle_on_policy_write",
+        "function": "wake_lifecycle_state",
+        "function_schema": "storage"
+      },
+      {
+        "table": "buckets",
+        "schema": "storage",
+        "enabled": "O",
+        "trigger": "wake_lifecycle_on_versioning_enable",
+        "function": "wake_lifecycle_state",
+        "function_schema": "storage"
+      },
+      {
+        "table": "objects",
+        "schema": "storage",
+        "enabled": "O",
+        "trigger": "protect_objects_delete",
+        "function": "protect_delete",
+        "function_schema": "storage"
+      },
+      {
+        "table": "objects",
+        "schema": "storage",
+        "enabled": "O",
+        "trigger": "update_objects_updated_at",
+        "function": "update_updated_at_column",
+        "function_schema": "storage"
+      }
+    ],
+    "event_triggers": [
+      {
+        "name": "issue_graphql_placeholder",
+        "event": "sql_drop",
+        "owner": "supabase_admin",
+        "enabled": "O",
+        "function": "set_graphql_placeholder",
+        "function_schema": "extensions"
+      },
+      {
+        "name": "pgrst_ddl_watch",
+        "event": "ddl_command_end",
+        "owner": "supabase_admin",
+        "enabled": "O",
+        "function": "pgrst_ddl_watch",
+        "function_schema": "extensions"
+      },
+      {
+        "name": "pgrst_drop_watch",
+        "event": "sql_drop",
+        "owner": "supabase_admin",
+        "enabled": "O",
+        "function": "pgrst_drop_watch",
+        "function_schema": "extensions"
+      },
+      {
+        "name": "issue_pg_cron_access",
+        "event": "ddl_command_end",
+        "owner": "supabase_admin",
+        "enabled": "O",
+        "function": "grant_pg_cron_access",
+        "function_schema": "extensions"
+      },
+      {
+        "name": "issue_pg_net_access",
+        "event": "ddl_command_end",
+        "owner": "supabase_admin",
+        "enabled": "O",
+        "function": "grant_pg_net_access",
+        "function_schema": "extensions"
+      },
+      {
+        "name": "issue_pg_graphql_access",
+        "event": "ddl_command_end",
+        "owner": "supabase_admin",
+        "enabled": "O",
+        "function": "grant_pg_graphql_access",
+        "function_schema": "extensions"
+      }
+    ]
+  },
+  "roles": {
+    "clients": [
+      {
+        "role": "anon",
+        "login": false,
+        "inherit": true,
+        "create_db": false,
+        "superuser": false,
+        "bypass_rls": false,
+        "create_role": false
+      },
+      {
+        "role": "authenticated",
+        "login": false,
+        "inherit": true,
+        "create_db": false,
+        "superuser": false,
+        "bypass_rls": false,
+        "create_role": false
+      }
+    ],
+    "client_membership_checks": [
+      {
+        "role": "anon",
+        "is_anon_member": true,
+        "has_read_all_data": false,
+        "has_write_all_data": false,
+        "is_service_role_member": false,
+        "is_authenticated_member": false
+      },
+      {
+        "role": "authenticated",
+        "is_anon_member": false,
+        "has_read_all_data": false,
+        "has_write_all_data": false,
+        "is_service_role_member": false,
+        "is_authenticated_member": true
+      }
+    ],
+    "privileged": [
+      {
+        "role": "postgres",
+        "login": true,
+        "inherit": true,
+        "create_db": true,
+        "superuser": false,
+        "bypass_rls": true,
+        "create_role": true
+      },
+      {
+        "role": "service_role",
+        "login": false,
+        "inherit": true,
+        "create_db": false,
+        "superuser": false,
+        "bypass_rls": true,
+        "create_role": false
+      },
+      {
+        "role": "supabase_admin",
+        "login": true,
+        "inherit": true,
+        "create_db": true,
+        "superuser": true,
+        "bypass_rls": true,
+        "create_role": true
+      }
+    ]
+  },
+  "grants": {
+    "effective_schema_privileges": [
+      {
+        "role": "anon",
+        "usage": true,
+        "create": false,
+        "schema": "auth"
+      },
+      {
+        "role": "anon",
+        "usage": true,
+        "create": false,
+        "schema": "extensions"
+      },
+      {
+        "role": "anon",
+        "usage": true,
+        "create": false,
+        "schema": "graphql"
+      },
+      {
+        "role": "anon",
+        "usage": true,
+        "create": false,
+        "schema": "graphql_public"
+      },
+      {
+        "role": "anon",
+        "usage": true,
+        "create": false,
+        "schema": "public"
+      },
+      {
+        "role": "anon",
+        "usage": true,
+        "create": false,
+        "schema": "realtime"
+      },
+      {
+        "role": "anon",
+        "usage": true,
+        "create": false,
+        "schema": "storage"
+      },
+      {
+        "role": "anon",
+        "usage": false,
+        "create": false,
+        "schema": "vault"
+      },
+      {
+        "role": "authenticated",
+        "usage": true,
+        "create": false,
+        "schema": "auth"
+      },
+      {
+        "role": "authenticated",
+        "usage": true,
+        "create": false,
+        "schema": "extensions"
+      },
+      {
+        "role": "authenticated",
+        "usage": true,
+        "create": false,
+        "schema": "graphql"
+      },
+      {
+        "role": "authenticated",
+        "usage": true,
+        "create": false,
+        "schema": "graphql_public"
+      },
+      {
+        "role": "authenticated",
+        "usage": true,
+        "create": false,
+        "schema": "public"
+      },
+      {
+        "role": "authenticated",
+        "usage": true,
+        "create": false,
+        "schema": "realtime"
+      },
+      {
+        "role": "authenticated",
+        "usage": true,
+        "create": false,
+        "schema": "storage"
+      },
+      {
+        "role": "authenticated",
+        "usage": false,
+        "create": false,
+        "schema": "vault"
+      },
+      {
+        "role": "service_role",
+        "usage": true,
+        "create": false,
+        "schema": "auth"
+      },
+      {
+        "role": "service_role",
+        "usage": true,
+        "create": false,
+        "schema": "extensions"
+      },
+      {
+        "role": "service_role",
+        "usage": true,
+        "create": false,
+        "schema": "graphql"
+      },
+      {
+        "role": "service_role",
+        "usage": true,
+        "create": false,
+        "schema": "graphql_public"
+      },
+      {
+        "role": "service_role",
+        "usage": true,
+        "create": false,
+        "schema": "public"
+      },
+      {
+        "role": "service_role",
+        "usage": true,
+        "create": false,
+        "schema": "realtime"
+      },
+      {
+        "role": "service_role",
+        "usage": true,
+        "create": false,
+        "schema": "storage"
+      },
+      {
+        "role": "service_role",
+        "usage": true,
+        "create": false,
+        "schema": "vault"
+      }
+    ],
+    "sensitive_relation_privilege_checks": 58,
+    "anon_authenticated_sensitive_relation_nonzero": [],
+    "explicit_sensitive_column_grants": [],
+    "public_default_acls": [
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "type": "r",
+        "owner": "postgres",
+        "schema": "public"
+      },
+      {
+        "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "type": "f",
+        "owner": "postgres",
+        "schema": "public"
+      },
+      {
+        "acl": "{postgres=rwU/postgres,anon=rwU/postgres,authenticated=rwU/postgres,service_role=rwU/postgres}",
+        "type": "S",
+        "owner": "postgres",
+        "schema": "public"
+      },
+      {
+        "acl": "{postgres=rwU/supabase_admin,anon=rwU/supabase_admin,authenticated=rwU/supabase_admin,service_role=rwU/supabase_admin}",
+        "type": "S",
+        "owner": "supabase_admin",
+        "schema": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/supabase_admin,anon=arwdDxtm/supabase_admin,authenticated=arwdDxtm/supabase_admin,service_role=arwdDxtm/supabase_admin}",
+        "type": "r",
+        "owner": "supabase_admin",
+        "schema": "public"
+      },
+      {
+        "acl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+        "type": "f",
+        "owner": "supabase_admin",
+        "schema": "public"
+      }
+    ],
+    "safe_api_role_settings": [],
+    "session_api_schemas": null,
+    "warning": "broad public default privileges remain for objects created by postgres and supabase_admin; this is not a current public application-table exposure"
+  },
+  "managed_rls": {
+    "auth_tables_without_rls_but_no_client_relation_grants": [
+      "custom_oauth_providers",
+      "mfa_recovery_code_sets",
+      "mfa_recovery_codes",
+      "oauth_authorizations",
+      "oauth_client_states",
+      "oauth_clients",
+      "oauth_consents",
+      "scim_tokens",
+      "scim_users",
+      "webauthn_challenges",
+      "webauthn_credentials"
+    ],
+    "storage_tables_all_have_rls": true,
+    "all_database_policy_count": 0
+  },
+  "auth": {
+    "aggregate_user_count": 0,
+    "health": {
+      "http_status": 200,
+      "name": "GoTrue",
+      "version": "v2.197.0"
+    },
+    "public_settings": {
+      "http_status": 200,
+      "external_email": true,
+      "external_phone": false,
+      "external_anonymous_users": false,
+      "enabled_oauth_providers": [],
+      "disable_signup": false,
+      "mailer_autoconfirm": false,
+      "phone_autoconfirm": false,
+      "saml_enabled": false,
+      "sms_provider_label": "twilio",
+      "sms_provider_label_does_not_confirm_phone_or_delivery": true,
+      "response_field_names": [
+        "disable_signup",
+        "external",
+        "mailer_autoconfirm",
+        "passkeys_enabled",
+        "phone_autoconfirm",
+        "saml_enabled",
+        "saml_private_key_next_configured",
+        "sms_provider"
+      ],
+      "passkeys_enabled": false,
+      "saml_private_key_next_configured": true,
+      "saml_private_key_next_configured_is_only_a_boolean_flag": true
+    },
+    "jwks": {
+      "http_status": 200,
+      "key_count": 1,
+      "kty": "EC",
+      "alg": "ES256",
+      "use": "sig",
+      "key_material_retained": false
+    },
+    "api_key_metadata": {
+      "enabled_legacy_anon_key_count": 1,
+      "enabled_publishable_key_count": 1,
+      "values_in_artifacts": false
+    },
+    "database_legacy_jwt_exp_setting": "3600",
+    "database_setting_does_not_confirm_auth_token_ttl": true,
+    "private_management_config_verified": false,
+    "private_management_config_unverified_fields": [
+      "site_url",
+      "uri_allow_list",
+      "jwt_exp",
+      "signing_key_lifecycle",
+      "refresh_token_rotation_and_reuse_interval",
+      "session_timebox_and_inactivity_timeout",
+      "single_session_and_mfa_enforcement",
+      "smtp_delivery_readiness",
+      "password_policy_and_leaked_password_protection",
+      "auth_hooks",
+      "captcha_and_auth_rate_limits"
+    ],
+    "capability_limit": "Supabase connector exposes no Auth config read operation; no scoped Management API credentials or authenticated Dashboard view were supplied; no token extraction attempted"
+  },
+  "migrations": {
+    "api_list": [],
+    "schema_count": 0,
+    "table": null,
+    "tracked_supabase_migration_files": [],
+    "classification": "no application migration history; managed service migrations are separate; no repair/reset/baseline write performed"
+  },
+  "storage": {
+    "aggregate_bucket_count": 0
+  },
+  "edge_functions": [],
+  "realtime": {
+    "publications": [
+      {
+        "name": "supabase_realtime",
+        "delete": true,
+        "insert": true,
+        "update": true,
+        "truncate": true,
+        "all_tables": false
+      }
+    ],
+    "publication_tables": []
+  },
+  "extensions": [
+    {
+      "name": "pg_stat_statements",
+      "schema": "extensions",
+      "version": "1.11"
+    },
+    {
+      "name": "pgcrypto",
+      "schema": "extensions",
+      "version": "1.3"
+    },
+    {
+      "name": "plpgsql",
+      "schema": "pg_catalog",
+      "version": "1.0"
+    },
+    {
+      "name": "supabase_vault",
+      "schema": "vault",
+      "version": "0.3.1"
+    },
+    {
+      "name": "uuid-ossp",
+      "schema": "extensions",
+      "version": "1.1"
+    }
+  ],
+  "advisors": {
+    "security": {
+      "lints": [],
+      "source": "get_advisors(type=security)"
+    },
+    "performance": {
+      "lints": [],
+      "source": "get_advisors(type=performance)"
+    },
+    "health": {
+      "lints": [],
+      "source": "get_advisors(type=health)"
+    },
+    "interpretation": "empty lints at audit time; not proof of future RLS or complete private Auth configuration"
+  },
+  "http_probes": [
+    {
+      "name": "auth_settings",
+      "status": 200
+    },
+    {
+      "name": "auth_health",
+      "status": 200
+    },
+    {
+      "name": "auth_jwks",
+      "status": 200
+    },
+    {
+      "name": "invalid_accept_profile",
+      "status": 406,
+      "code": "PGRST106",
+      "exposed_schemas": [
+        "public",
+        "graphql_public"
+      ]
+    },
+    {
+      "name": "public_profiles_read_limit_zero",
+      "status": 404,
+      "code": "PGRST205"
+    }
+  ],
+  "coverage": {
+    "database_schema": "verified",
+    "grants_roles_rls": "verified metadata, not A/B behavior",
+    "functions": "application absence verified; platform metadata and sensitive defs reviewed",
+    "migrations": "verified absent application history",
+    "security_advisors": "verified empty",
+    "auth_public_config": "verified",
+    "auth_private_management_config": "unverified: capability limit",
+    "runtime_ab_isolation": "not run: would require writes",
+    "email_delivery": "not tested: would require Auth flow",
+    "backup_restore": "not verified"
+  },
+  "readiness": {
+    "local_phase_2b_2_schema_and_client_foundation": "eligible for separate explicit start, with recorded Auth config gate",
+    "live_auth_or_hosted_apply": "not approved/ready by this audit",
+    "implementation_started": false
+  }
+}

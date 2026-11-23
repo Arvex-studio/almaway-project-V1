@@ -1,25 +1,24 @@
 # Phase 2B-1 — отдельный migration plan
 
-Статус: **план, не выполнен**. Через `AlmawayV1` подтверждены project
-`almaway-project-V1`, organization `Almaway-project-V1`, ref `nwmmqtyfaumuaocspsur`.
-Проект `INACTIVE`: list_tables завершился ошибкой недоступности, list_migrations — timeout.
-Schema, Auth, grants, RLS и migration history неизвестны. Документ не разрешает mutations.
+Статус: **план, реализация не начата**. Завершающий
+[read-only audit](audits/supabase-phase-2b-1-2026-11-11.md) подтвердил ACTIVE_HEALTHY,
+отсутствие application schema и application migration history на `nwmmqtyfaumuaocspsur`.
+Проект/организация совпали с AlmaWay; предыдущий INACTIVE-блокер снят владельцем.
+Существующие platform schemas/ACL/functions сохраняются. Private Auth Management config
+остаётся непроверенным и является gate до live Auth. Report разрешает рекомендовать
+отдельный старт local Phase 2B-2, не hosted mutations и не автоматическую реализацию.
 Основание: [контракт](backend-contract.md), [схема](backend-schema-proposal.md).
-Документальный security-review и предыдущие frontend regression checks завершены в Phase 2B-1;
-они не заменяют будущие migrations и A/B runtime tests. Новый discovery снимает прежний
-OAuth-блокер. Единственное действие владельца — возобновить существующий проект в Dashboard,
-чтобы read-only аудит смог подключиться; агент не выполняет Resume/Restore.
 
 ## Порядок и точки остановки
 
 ### 0. Проверить доступность и фактическую baseline
 
-Identity проекта уже сопоставлена с historical metadata. Повторить status/connection check
-через `AlmawayV1` после восстановления доступности владельцем. Не менять ref, не создавать
-проект и не использовать Gridy/Qaskelen. До доступности БД завершаются документы/review,
-но нельзя угадывать existing-schema/history или начинать Phase 2B-2 автоматически.
+Identity и пустой application baseline уже проверены. Перед реализацией повторить
+status/schema/history через `AlmawayV1`, чтобы исключить изменения после snapshot.
+Не менять ref, не создавать проекты и не использовать Gridy/Qaskelen. Если healthy state
+потерян, не запускать Resume/Restore в рамках read-only scope.
 
-Снять read-only inventory: table/column definitions, constraints/indexes,
+Сверить с сохранённым snapshot read-only inventory: table/column definitions, constraints/indexes,
 RLS/policies/grants/default ACL, views/functions/triggers/ownership, exposed schemas,
 Auth config без secrets, security advisors, migration versions/names и drift.
 Сохранить sanitized audit artifact со временем, ref и unknowns.
@@ -119,7 +118,8 @@ Credentials только через OAuth/локальное secret storage; н�
 
 Только отдельная явно запущенная задача с доступным AlmaWay, reviewed migration SHA,
 зафиксированной baseline/history, проверенными backup/export и restore procedure.
-Проверить реальную доступность backup/PITR — тариф и состояние сейчас неизвестны.
+Проверить реальную доступность backup/PITR — plan metadata `free` подтверждена,
+но доступные recovery points и restore readiness неизвестны.
 Не обещать восстановление без проверенного recovery point и restoration rehearsal.
 
 До apply: перечитать main/AGENTS, убедиться в отсутствии новых migrations/drift,
@@ -208,8 +208,10 @@ Session/cache и UI integration assertions исполняются в фазе п
 
 ## Definition of ready / done
 
-**Ready for 2B-2:** выбран подтверждённый AlmaWay ref и read-only доступ, аудит заполнен,
-решён existing-schema/history путь, этот контракт reviewed, 2B-2 явно запущена.
+**Ready for local 2B-2 preparation:** baseline ref/schema/history подтверждена аудитом,
+выбран initial additive путь без remote repair, контракт merged, Auth Management config
+unknowns зафиксированы как отдельный gate до live Auth. Перед началом требуется явный
+запуск 2B-2 и recheck snapshot. Готовность hosted apply этим не определяется.
 
 **Done for 2B-2:** отдельный reviewable diff с audit evidence, migration/rollback artifacts,
 local replay/A/B результатами и limitations, typed clients foundation; hosted DB/Auth/UI
