@@ -29,10 +29,11 @@ export function Profile() {
     <section className="ag-card ag-panel">
       <h2>Мой темп</h2><p>Запишите полное время своего похода вместе с привалами. При сравнении учитывайте сезон, покрытие и состояние группы.</p>
       <form className="ag-stack ag-stack-tight" onSubmit={add}>
-        <label className="ag-field">Маршрут<select value={recordRoute} required onChange={event => setRecordRoute(event.target.value)}>
+        <div className="ag-field"><label htmlFor="ag-record-route">Маршрут</label>
+        <select id="ag-record-route" value={recordRoute} required onChange={event => setRecordRoute(event.target.value)}>
           <option value="">Выберите вариант</option>
           {guardRoutes.filter(route => route.guideMinutes).map(route => <option key={route.id} value={route.id}>{route.title}</option>)}
-        </select></label>
+        </select></div>
         <div className="ag-field-grid">
           <label>Дата похода<input name="date" type="date" required /></label>
           <label>Прошло минут<input name="minutes" type="number" min="1" max="1440" required /></label>

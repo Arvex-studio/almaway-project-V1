@@ -16,7 +16,7 @@ export function Catalog() {
       <label className="ag-search"><Search aria-hidden="true" /><span className="ag-sr">Поиск маршрутов</span>
         <input type="search" placeholder="Название, ущелье или номер" value={query} onChange={event => setQuery(event.target.value)} />
       </label>
-      <div className="ag-filters" aria-label="Категории">
+      <div className="ag-filters" role="group" aria-label="Категории">
         <button type="button" aria-pressed={!category} onClick={() => setCategory(undefined)}>Все</button>
         {categories.map(item => <button key={item} type="button" aria-pressed={category === item} onClick={() => setCategory(item)}>{item}</button>)}
       </div>

@@ -66,7 +66,7 @@ export function MapHome({ initialPlace }: { initialPlace?: string }) {
       <label className="ag-search"><Search aria-hidden="true" /><span className="ag-sr">Поиск мест на карте</span>
         <input ref={search} type="search" placeholder="Вершина, ущелье или озеро" value={query} onChange={event => { setQuery(event.target.value); setSelectedSlug(null) }} />
       </label>
-      <div className="ag-filters" aria-label="Места на карте">
+      <div className="ag-filters" role="group" aria-label="Места на карте">
         {filters.map(filter => <button type="button" key={filter} aria-pressed={filter === activeFilter}
           onClick={() => { setActiveFilter(filter); setSelectedSlug(null) }}>{filter === 'Рядом' ? 'Все места' : filter}</button>)}
       </div>

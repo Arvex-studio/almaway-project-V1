@@ -10,7 +10,8 @@ export function RouteMetrics({ route, includeElevation = false }: { route: Guard
   ]
   if (includeElevation) values.push({ icon: Mountain, label: 'Отметка по источнику', value: route.elevation === undefined ? '—' : `${route.elevation} м` })
   return <dl className="ag-metrics">
-    {values.map(({ icon: Icon, label, value }) => <div key={label}><dt><Icon aria-hidden="true" />{label}</dt><dd>{value === '—' ? <span aria-label="Нет данных">—</span> : value}</dd></div>)}
+    {values.map(({ icon: Icon, label, value }) => <div key={label}><dt><Icon aria-hidden="true" />{label}</dt>
+      <dd>{value === '—' ? <><span aria-hidden="true">—</span><span className="ag-sr">Нет данных</span></> : value}</dd></div>)}
   </dl>
 }
 

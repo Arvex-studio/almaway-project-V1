@@ -96,6 +96,7 @@
 .ag-toolbar .ag-search { flex: 1 1 270px; }
 .ag-search svg { width: 18px; height: 18px; flex: none; }
 .ag-search input { min-width: 0; width: 100%; min-height: 46px; border: 0; background: transparent; color: var(--ag-ink); }
+.ag-search input::placeholder { color: var(--ag-muted); opacity: 1; }
 .ag-search:focus-within { outline: 2px solid #497853; outline-offset: 2px; }
 .ag-search input:focus-visible { outline: 0; }
 .ag-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
@@ -141,7 +142,7 @@
 .ag-map-engine .real-map .maplibregl-ctrl-bottom-left { z-index: 5; bottom: 0; left: 0; }
 .ag-map-engine .map-pin { background: var(--ag-forest); }
 .ag-map-legend { display: flex; flex-wrap: wrap; gap: 2px 14px; justify-content: space-between; align-content: center; padding: 6px 10px; min-height: 36px; border-top: 1px solid var(--ag-line); font-size: .72rem; color: var(--ag-muted); }
-.ag-map-legend a { color: var(--ag-forest); text-decoration: underline; text-underline-offset: 2px; }
+.ag-map-legend a { display: inline-flex; align-items: center; min-height: 44px; color: var(--ag-forest); text-decoration: underline; text-underline-offset: 2px; }
 .ag-map-legend i { display: inline-block; width: 24px; margin-right: 4px; border-top: 2px dashed var(--ag-forest); vertical-align: .23em; }
 .ag-map-sheet { position: absolute; z-index: 4; inset: auto 9px 48px; max-width: 420px; max-height: calc(100% - 74px); overflow: auto; overscroll-behavior: contain; padding: 12px; border-radius: 12px; border: 1px solid var(--ag-line); background: var(--ag-surface); box-shadow: 0 8px 22px #17332a25; animation: ag-sheet-in 230ms ease-out both; }
 @keyframes ag-sheet-in { from { transform: translateY(12px); opacity: .25; } to { transform: none; opacity: 1; } }
