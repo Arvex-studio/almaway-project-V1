@@ -39,14 +39,14 @@ export default function MapHome() {
         {!selected && ready && (
           <div className="map-hint">
             <Sparkles />
-            <span><strong>{places.length} мест</strong>{places.length ? 'подходят для поездки сегодня' : 'Попробуй другую подборку'}</span>
+            <span><strong>{places.length} мест</strong>{places.length ? 'в каталоге · проверь условия перед поездкой' : 'Попробуй другую подборку'}</span>
           </div>
         )}
         {selected && <PlacePreviewSheet selectedPlace={selected} onClose={() => setSelectedSlug(null)} />}
         {layersOpen && <DemoDialog title="Слои карты" onClose={() => setLayersOpen(false)}>
           <span>Туристическая карта</span>
           <label className="map-layer-option"><input type="checkbox" checked={showPlaces} onChange={event => { setShowPlaces(event.target.checked); setSelectedSlug(null) }} />Места</label>
-          <label className="map-layer-option"><input type="checkbox" checked={showRoutes} onChange={event => setShowRoutes(event.target.checked)} />Маршруты</label>
+          <label className="map-layer-option"><input type="checkbox" checked={showRoutes} onChange={event => setShowRoutes(event.target.checked)} />Маршруты (демо)</label>
         </DemoDialog>}
       </main>
     </AppShell>

@@ -1302,3 +1302,44 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(47,125,91,.28); 
 .map-layer-option input { accent-color: var(--green); }
 .map-controls button:disabled { opacity: 0.45; cursor: default; }
 .almaway-location { width: 1rem; height: 1rem; border: 3px solid white; border-radius: 50%; background: var(--lake); box-shadow: 0 0 0 5px rgba(61,143,209,0.2); }
+
+/* F0: honest preview states and touch/keyboard access within the existing palette. */
+.demo-notice, .availability-note { padding: 0.85rem 1rem; border: 1px solid var(--mist); border-radius: 0.8rem; background: var(--green-soft); color: var(--forest); font-size: 0.82rem; line-height: 1.5; }
+.demo-notice { margin: 0 0 1.25rem; }
+.detail-body > .demo-notice { max-width: 680px; margin-inline: auto; }
+.card-copy .availability-note { margin-bottom: 0; color: var(--forest); }
+.data-caption { color: var(--stone); font-size: 0.75rem; line-height: 1.4; }
+.card-image { width: 100%; }
+.section-head a { color: var(--green); }
+.filter-chip, .segmented button { min-height: 44px; }
+.segmented { height: auto; }
+.sheet-handle { width: 44px; height: 44px; margin: 0 auto; background: transparent; position: relative; }
+.sheet-handle::after { content: ''; position: absolute; inset: 19px 2px; border-radius: 99px; background: #7c9187; }
+.save-round, .icon-button, .floating-icon { min-width: 44px; min-height: 44px; }
+.detail-link, .route-banner > a { min-height: 44px; min-width: 44px; }
+.planner-box textarea:focus-visible { outline: 2px solid var(--green); outline-offset: 4px; border-radius: 0.25rem; }
+.place-sheet { max-height: calc(100dvh - 13rem - env(safe-area-inset-bottom)); overflow-y: auto; overscroll-behavior: contain; }
+.map-controls.raised { top: 8.5rem; bottom: auto; }
+.sheet-title-row > div { min-width: 0; }
+.sheet-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.sheet-actions > * { padding-inline: 0.4rem; }
+@media (max-width: 359px) {
+  .profile-header { flex-wrap: wrap; gap: 0.65rem; }
+  .profile-header > div:nth-child(2) { min-width: 160px; }
+  .avatar-profile { width: 3rem; height: 3rem; }
+  .sheet-content { grid-template-columns: minmax(0, 1fr); }
+  .sheet-photo { display: none; }
+  .achievement-row { grid-template-columns: 1fr; }
+}
+.map-controls.raised { display: flex; }
+.map-controls.raised button + button { border-top: 0; border-left: 1px solid var(--mist); }
+.place-sheet { max-height: calc(100dvh - 17rem - env(safe-area-inset-bottom)); }
+@media (max-height: 500px) {
+  .map-controls.raised { top: 4.75rem; }
+  .map-shell:has(.place-sheet) .filter-row { visibility: hidden; }
+  .place-sheet { max-height: calc(100dvh - 12rem - env(safe-area-inset-bottom)); }
+}
+.map-shell:has(.place-sheet) .real-map .maplibregl-ctrl-bottom-left { top: 8.5rem; bottom: auto; max-width: calc(100% - 8rem); }
+@media (max-height: 500px) {
+  .map-shell:has(.place-sheet) .real-map .maplibregl-ctrl-bottom-left { top: 4.75rem; }
+}
