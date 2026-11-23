@@ -2,8 +2,17 @@ import { expect, test } from '@playwright/test'
 
 const fixtureStyle = {
   version: 8,
-  sources: {},
-  layers: [{ id: 'test-background', type: 'background', paint: { 'background-color': '#dce8d9' } }],
+  sources: {
+    'test-credits': {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: [] },
+      attribution: '© MapTiler © OpenStreetMap contributors',
+    },
+  },
+  layers: [
+    { id: 'test-background', type: 'background', paint: { 'background-color': '#dce8d9' } },
+    { id: 'test-credits', type: 'circle', source: 'test-credits' },
+  ],
 }
 
 test('missing key preserves navigation and gives a safe map fallback', async ({ page }, info) => {
@@ -11,7 +20,7 @@ test('missing key preserves navigation and gives a safe map fallback', async ({ 
   await page.goto('/map')
   await expect(page.getByRole('status')).toContainText('Карта пока недоступна')
   await expect(page.locator('.maplibregl-canvas')).toHaveCount(0)
-  await page.getByRole('navigation').getByRole('link', { name: 'Открытия', exact: true }).click()
+  await page.getByRole('navigation').getByRole('link', { name: 'Открытия', exact: true }).press('Enter')
   await expect(page).toHaveURL(/\/explore$/)
 })
 
@@ -38,8 +47,9 @@ test.describe('real MapLibre engine with a controlled style response', () => {
     await expect(pin).toBeVisible()
     const title = await pin.getAttribute('aria-label')
     await pin.click()
-    await expect(page.getByRole('region', { name: 'Выбранное место' })).toContainText(title!.replace('Открыть место: ', ''))
-    await page.getByRole('link', { name: 'Подробнее', exact: true }).click()
+    const sheet = page.getByRole('region', { name: title!.replace('Открыть место: ', ''), exact: true })
+    await expect(sheet).toBeVisible()
+    await sheet.getByRole('link', { name: 'Подробнее', exact: true }).click()
     await expect(page.locator('h1')).toHaveText(title!.replace('Открыть место: ', ''))
     await expect(page.locator('.maplibregl-canvas')).toHaveCount(0)
     await page.getByRole('link', { name: 'Карта', exact: true }).click()
@@ -81,14 +91,57 @@ test.describe('real MapLibre engine with a controlled style response', () => {
     await expect(lake).toHaveClass(/saved/)
     await lake.click()
     await expect(lake).toHaveClass(/selected/)
-    const sheet = page.getByRole('region', { name: 'Выбранное место' })
-    await sheet.getByRole('button', { name: /Убрать из сохранённого/ }).last().click()
+    const sheet = page.getByRole('region', { name: 'Большое Алматинское озеро', exact: true })
+    await sheet.getByRole('button', { name: /Убрать из сохранённого/ }).click()
     await sheet.getByRole('button', { name: 'Закрыть карточку', exact: true }).click()
     await expect(lake).not.toHaveClass(/saved|selected/)
     await expect(canvas).toHaveAttribute('data-instance-check', 'original')
     await page.getByRole('button', { name: 'Лёгкие', exact: true }).click()
     await expect(page.locator('.almaway-marker')).toHaveCount(0)
     await expect(page.getByText('Попробуй другую подборку')).toBeVisible()
+  })
+
+  test('route preview keeps provenance, map controls and keyboard navigation available', async ({ page }) => {
+    await page.goto('/map')
+    await page.getByRole('button', { name: 'Озёра', exact: true }).click()
+    const pin = page.getByRole('button', { name: 'Открыть место: Большое Алматинское озеро' })
+    await pin.press('Enter')
+    const sheet = page.getByRole('region', { name: 'Большое Алматинское озеро', exact: true })
+    await expect(sheet.getByRole('heading')).toBeFocused()
+    await page.keyboard.press('Tab')
+    await expect(sheet.getByRole('button', { name: 'Закрыть карточку' })).toBeFocused()
+    await expect(sheet.getByText('Параметры маршрута · демо')).toBeVisible()
+    await expect(sheet.getByRole('link', { name: 'Координаты: OpenStreetMap' })).toHaveAttribute('href', 'https://www.openstreetmap.org/relation/3427772')
+    await expect(sheet.locator('time')).toHaveAttribute('datetime', '2026-09-30')
+
+    for (const width of [320, 375, 430, 768, 1024, 1440]) {
+      await page.setViewportSize({ width, height: width === 320 ? 568 : 900 })
+      const card = (await sheet.boundingBox())!
+      const attribution = (await page.locator('.maplibregl-ctrl-attrib').boundingBox())!
+      const navigation = (await page.getByRole('navigation', { name: 'Основная навигация' }).boundingBox())!
+      const controls = (await page.getByRole('button', { name: 'Моё местоположение' }).boundingBox())!
+      expect(card.x).toBeGreaterThanOrEqual(0)
+      expect(card.x + card.width).toBeLessThanOrEqual(width)
+      expect(card.y + card.height).toBeLessThanOrEqual(attribution.y)
+      expect(card.y + card.height).toBeLessThanOrEqual(navigation.y)
+      if (width < 700) expect(card.y).toBeGreaterThanOrEqual(controls.y + controls.height)
+      await expect(sheet.getByRole('link', { name: 'План', exact: true })).toHaveAttribute('href', '/plan')
+    }
+
+    await page.getByRole('button', { name: 'Слои карты' }).click()
+    await expect(page.getByRole('dialog', { name: 'Слои карты' })).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(page.getByRole('dialog', { name: 'Слои карты' })).toHaveCount(0)
+    await expect(sheet).toBeVisible()
+    await sheet.getByRole('button', { name: 'Закрыть карточку' }).press('Escape')
+    await expect(sheet).toHaveCount(0)
+    await expect(pin).toBeFocused()
+
+    await page.getByRole('button', { name: 'Горы', exact: true }).click()
+    const point = page.locator('.almaway-marker[data-slug] button').first()
+    await point.press('Enter')
+    await expect(page.getByText('Для этой точки пока нет данных о маршруте.')).toBeVisible()
+    await expect(page.getByText('Параметры маршрута · демо')).toHaveCount(0)
   })
 
   test('panning preserves marker icon DOM when its state is unchanged', async ({ page }) => {

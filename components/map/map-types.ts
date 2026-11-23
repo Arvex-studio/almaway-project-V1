@@ -7,7 +7,7 @@ export interface MapSurfaceProps {
   places: readonly TouristPlace[]
   selectedSlug: string | null
   savedSlugs: readonly string[]
-  onSelect: (slug: string) => void
+  onSelect: (slug: string, trigger: HTMLButtonElement) => void
   showPlaces?: boolean
   routes?: FeatureCollection<LineString>
   showRoutes?: boolean

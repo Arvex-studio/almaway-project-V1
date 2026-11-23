@@ -2,8 +2,9 @@
 
 import { useMemo, useRef, useState } from 'react'
 import { Sparkles } from 'lucide-react'
-import { AppShell, FilterChip, MapControls, PlacePreviewSheet, SearchBar } from '@/components/almaway'
+import { AppShell, FilterChip, MapControls, SearchBar } from '@/components/almaway'
 import { MapSurface, type MapSurfaceHandle } from '@/components/map/map-surface'
+import { PlacePreviewSheet } from '@/components/map/place-preview-sheet'
 import { DemoDialog } from '@/components/future/demo-dialog'
 import { useDemoSaved } from '@/components/demo-state'
 import { filterTouristPlaces, getTouristPlace, type MapFilter } from '@/lib/tourist-places'
@@ -13,6 +14,7 @@ const filters: readonly MapFilter[] = ['Рядом', 'Горы', 'Озёра', '
 
 export default function MapHome() {
   const map = useRef<MapSurfaceHandle>(null)
+  const previewTrigger = useRef<HTMLButtonElement>(null)
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null)
   const [activeFilter, setActiveFilter] = useState<MapFilter>('Рядом')
   const [ready, setReady] = useState(false)
@@ -23,10 +25,25 @@ export default function MapHome() {
   const places = useMemo(() => filterTouristPlaces(activeFilter), [activeFilter])
   const selected = selectedSlug ? getTouristPlace(selectedSlug) : undefined
 
+  function selectPlace(slug: string, trigger: HTMLButtonElement) {
+    previewTrigger.current = trigger
+    setSelectedSlug(slug)
+  }
+
+  function closePreview() {
+    setSelectedSlug(null)
+    previewTrigger.current?.focus({ preventScroll: true })
+  }
+
   return (
     <AppShell className="map-shell">
-      <main className="map-screen">
-        <MapSurface ref={map} places={places} selectedSlug={selectedSlug} savedSlugs={savedSlugs} onSelect={setSelectedSlug} onReadyChange={setReady} showPlaces={showPlaces} routes={demoRoute} showRoutes={showRoutes} />
+      <main className="map-screen" onKeyDown={event => {
+        if (event.key === 'Escape' && selected && !layersOpen) {
+          event.preventDefault()
+          closePreview()
+        }
+      }}>
+        <MapSurface ref={map} places={places} selectedSlug={selectedSlug} savedSlugs={savedSlugs} onSelect={selectPlace} onReadyChange={setReady} showPlaces={showPlaces} routes={demoRoute} showRoutes={showRoutes} />
         <div className="map-overlay">
           <SearchBar />
           <div className="filter-row">
@@ -42,7 +59,7 @@ export default function MapHome() {
             <span><strong>{places.length} мест</strong>{places.length ? 'подходят для поездки сегодня' : 'Попробуй другую подборку'}</span>
           </div>
         )}
-        {selected && <PlacePreviewSheet selectedPlace={selected} onClose={() => setSelectedSlug(null)} />}
+        {selected && <PlacePreviewSheet selectedPlace={selected} onClose={closePreview} />}
         {layersOpen && <DemoDialog title="Слои карты" onClose={() => setLayersOpen(false)}>
           <span>Туристическая карта</span>
           <label className="map-layer-option"><input type="checkbox" checked={showPlaces} onChange={event => { setShowPlaces(event.target.checked); setSelectedSlug(null) }} />Места</label>
