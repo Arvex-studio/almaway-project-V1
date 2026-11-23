@@ -1,20 +1,22 @@
 # Almaway Guard — Current Engineering State
-**Snapshot reviewed:** 2026-11-23 20:29 Asia/Almaty (UTC+05)
-**Status:** Guard P0 visual integration verified on PR #9. Owner review and merge authorization pending. [Dated integration report](sessions/2026-11-23T20-28+05-codex-pr8-pr9-visual-review.md) · [Engineering session](https://app.notion.com/p/421d12b48f4981449d0cf588bc49a963).
+**Snapshot checked:** 2026-11-23, after 21:02 Asia/Almaty (UTC+05).  
+**Status:** **P0 merged into `main` with owner's explicit approval**. PR #8 closed as superseded. **Not approved for public launch or outdoor-safety use.**
 
-This file records the **last observed** state and must be revalidated against GitHub/Notion at the start of every new agent session. It is a handoff summary, not a substitute for the actual branch HEAD. Only the integration owner should revise it, always with a dated session report.
+This is the current engineering handoff, not a replacement for live GitHub/Vercel/Notion checks. See the dated [merge-and-closure evidence](sessions/2026-11-23T21-03+05-chatgpt-pr9-merge-pr8-close.md) and [prior comparative review](sessions/2026-11-23T20-28+05-codex-pr8-pr9-visual-review.md). Only the integration owner updates this file after live readback.
 
 ## 1. GitHub source of truth
 
 Repo: https://github.com/Arvex-studio/almaway-project-V1
 
-| Branch/PR | Verified at snapshot | Purpose | State |
-| --- | --- | --- | --- |
-| [PR #9](https://github.com/Arvex-studio/almaway-project-V1/pull/9) · `codex/ag-guard-p0` | **Verified application `4ddaaf1288fd07166aed948b1ff6b9d109a9ccb9`; last read-back before this handoff `61a62002acda83b5639cfb0db931f92e6d86138f`** | P0 hiking-preparation app, new Guard MapHome, route catalog, plan and export | `Ready for review`, mergeable, not merged at inspection |
-| [PR #8](https://github.com/Arvex-studio/almaway-project-V1/pull/8) · `codex/alpine-map-route-preview` | Application head `a6cae13448bb1939d24c592f83a1084b4ff8740b` | Accessible map card, provenance, source status, 320x568 UX | `Ready for review`, mergeable, not merged at inspection |
-| `main` | `f5c787271cc9d4cbbc00e691581383bbbb9af488` at inspection | Released branch, prior to Guard P0 | No PR #8/#9 merge observed |
+| Branch / PR | Observed SHA and exact event | Status |
+| --- | --- | --- |
+| `main` | [Merge commit `3c7cd916b44cf6f3ae9678898703998cb85368e6`](https://github.com/Arvex-studio/almaway-project-V1/commit/3c7cd916b44cf6f3ae9678898703998cb85368e6), verified as `main` HEAD immediately after merge, followed by documentation-only commits | **Guard P0 integrated into main** |
+| [PR #9](https://github.com/Arvex-studio/almaway-project-V1/pull/9), branch `codex/ag-guard-p0` | Reviewed head `fcdeb557e49b53fc3a592cf9a16ef769e592a2b3`. Merged **2026-11-23 21:01:42 UTC+05**. | **Merged** |
+| [PR #8](https://github.com/Arvex-studio/almaway-project-V1/pull/8), branch `codex/alpine-map-route-preview` | Reference head `a6cae13448bb1939d24c592f83a1084b4ff8740b`. Closed **2026-11-23 21:02:24 UTC+05**. | **Closed WITHOUT merging — superseded by #9** |
 
-The evidence and handoff commits follow the tested application commit. [PR #9 commits](https://github.com/Arvex-studio/almaway-project-V1/pull/9/commits) gives the current branch tip.
+GitHub preflight used `expected_head_sha=fcdeb55` and merge method `merge` to retain the history. Latest main SHA will advance with any later handoff documentation commits; **always fetch the live ref rather than relying on the merge SHA alone**.
+
+Vercel **automatically** created a production-target deployment on the merge into `main` (commit `3c7cd916`), recorded as `READY`, and another production-target `READY` deployment for the next documentation commit. **No manual deploy/promotion was executed here.** The project currently reports SSO protection enabled for `vercel.app` domains (`all_except_custom_domains`) and `live=false`; do not infer general public access or launch approval from a production-target build. Do not change Vercel domain/protection/settings without owner authorization.
 
 ## 2. P0 capabilities verified by code inspection
 
@@ -27,18 +29,21 @@ The evidence and handoff commits follow the tested application commit. [PR #9 co
 - Local private trip drafts/history in browser + manual copy, TXT download and OS share where supported; **not** cloud sync, actual delivery status or automated trusted-contact check-ins.
 - `almaway-design` skill and Alpine UI design rules.
 
-## 3. Current verification
+## 3. Verification and trust levels
 
-The integrator ran the pinned pnpm install, typecheck, build, 16 Playwright tests (10 map, 6 missing-key), and diff checks. Matched production screenshots cover 320 × 568, 390 × 844 and 1440 × 900. A protected Vercel deployment of the application SHA passed the keyboard map-to-private-trip scenario at six widths from 320 through 1440. Across map and preparation, 12 axe scans reported zero violations. Weather returned its expected disabled-provider 503. Physical devices and assistive-technology sessions remain outstanding. [Screenshots and decisions](https://github.com/Arvex-studio/almaway-project-V1/tree/61a62002acda83b5639cfb0db931f92e6d86138f/docs/design/pr8-pr9-comparison) · [Per-width results](https://github.com/Arvex-studio/almaway-project-V1/blob/61a62002acda83b5639cfb0db931f92e6d86138f/docs/design/pr8-pr9-comparison/preview-checks.json) · [Tested Preview](https://almaway-project-v1-f0-preview-mbbfyfoi7-byicnq-3328s-projects.vercel.app/map).
+- **Verified by GitHub:** PR9 merged and attached to main commit `3c7cd916`; PR8 closed unmerged; `main` HEAD read back matching merge commit immediately after the operation.
+- **Verified by Vercel:** production-target READY for merge commit `3c7cd916`, with Git metadata referring to `main`; SSO protection on `vercel.app` domains according to project config. Later documentation-only commits can trigger automatic further production deployments.
+- **Codex-reported on PR9 head `fcdeb55`:** `pnpm install --frozen-lockfile`, `pnpm typecheck`, `pnpm build`, `pnpm test` (16 Playwright scenarios: 10 map and 6 missing-key), 6 Chromium viewport reviews, 12 axe-core checked states with zero reported violations. These are real recorded agent observations, **but were not independently re-run by this ChatGPT merge session**; no separate GitHub Actions test workflow was found.
+- **Unverified for beta/public release:** physical phones, mobile weak-network, screen readers, continuous GPX routes and rights, timed field tracks, commercial forecast terms, and professional route safety review.
+- [Screenshot comparison/decisions](https://github.com/Arvex-studio/almaway-project-V1/tree/61a62002acda83b5639cfb0db931f92e6d86138f/docs/design/pr8-pr9-comparison) · [Codex comparison log](sessions/2026-11-23T20-28+05-codex-pr8-pr9-visual-review.md) · [Owner-authorized merge record](sessions/2026-11-23T21-03+05-chatgpt-pr9-merge-pr8-close.md).
 
-GitHub REST confirmed #9 open, ready for review and clean at the evidence commit. #8 remains open. [T407](https://app.notion.com/p/421d12b48f49819dbab1d3ae8fe71039) moved from Ready to Review. [T304](https://app.notion.com/p/421d12b48f4981d89102ee978d07ba57) remains in Review with updated browser evidence.
+## 4. Final integration decision (accepted / completed)
 
-## 4. Integration decision
-
-- Retain PR #9's GuardShell, one MapLibre surface, catalog, preparation and private journal. Retain #8's focus on heading, Escape, focus return, separated attribution and source, and pinned details/save actions.
-- Adapt #8's visible marker above the sheet and compact source/date strip. The camera measures the open panel and frames repeated list selections after panning. The status of full route geometry remains visible on 320 × 568.
-- The comparison rejects the legacy demo metrics and third-party thumbnail. The existing desktop catalog and map stay side by side. No demo planner CTA was introduced. The previous state and decision history are in the [handoff preceding the comparison](sessions/2026-11-23T20-04+05-chatgpt-combo-handoff.md).
-- The owner reviews #9. After acceptance and authorized merge, #8 can be closed as superseded.
+- **Owner explicitly approved** merging PR9 into main and closing PR8 after readback; both actions are complete as verified above.
+- PR9 is the single canonical Guard P0 base: GuardShell, one MapLibre surface, atlas catalogue, manual day planning, weather adapter, gear checklist and private local journal/export.
+- PR8's best map UX was included: heading focus, Escape and focus return, compact source/date row, marker visible above sheet at 320×568, recenter after panning, visible attribution, and no fictitious full trail.
+- PR8 was **not** merged separately; its code and screenshot history remains accessible in the closed PR.
+- This milestone is **internal product integration**, not public launch or claim of safe hiking navigation.
 
 ## 5. Remaining blockers
 
@@ -49,17 +54,20 @@ GitHub REST confirmed #9 open, ready for review and clean at the evidence commit
 - No background check-in, real notifications, SOS automation, or official MЧС integration. Keep those disabled/unclaimed.
 - Public release is **NOT** authorized by PR merge.
 
-## 6. Ownership
+## 6. Ownership and next work
 
-| Owner | Next decision or work |
+| Owner | Next concrete action |
 | --- | --- |
-| Product owner | Review PR #9, screenshots and T407; authorize merge explicitly. Decide closure of #8 after #9 acceptance. |
-| Integration owner | Record the owner's decision in the next dated session; retain the single Guard map and the regression tests. |
-| Data and QA team | Verify GPX rights and trail continuity, weather terms, physical-device behavior and screen-reader use. |
+| Product owner | Evaluate priority of real GPX field data, provider licensing, beta scope and authorization. Separate public-launch decision required. |
+| Future Codex / integration owner | Start from current `main`, preserve history, create a NEW feature branch and date-stamped session report; do not restart the superseded PR8 implementation. |
+| Data/route owners | Source continuous permissioned GPX, verify trailheads/access/timing, field checks and source licenses. |
+| QA | Physical Android/iOS, offline/weak signal, map attribution and screen-reader assessment; report evidence before beta. |
 
 ## 7. Start the next session
 
-Read [AGENTS](../../AGENTS.md), the [handoff protocol](HANDOFF_PROTOCOL.md), the [latest session](sessions/2026-11-23T20-28+05-codex-pr8-pr9-visual-review.md), [Engineering Control Room](https://app.notion.com/p/421d12b48f49813ba5d4cc384c252938) and both live PRs. Fetch current refs before edits. A PR approval or merge is separate from public release authorization.
+Read [AGENTS.md](../../AGENTS.md), [handoff protocol](HANDOFF_PROTOCOL.md), [the latest merge/closure session](sessions/2026-11-23T21-03+05-chatgpt-pr9-merge-pr8-close.md), [the prior comparative session](sessions/2026-11-23T20-28+05-codex-pr8-pr9-visual-review.md), [Notion Engineering Control Room](https://app.notion.com/p/421d12b48f49813ba5d4cc384c252938) and the task board. Fetch actual `main` HEAD and Vercel deployment target/protection before changing deployment. Distinguish automated production deployment from public-launch authorization.
+
+**Never re-open or independently merge superseded PR #8.** For new features branch from `main` and make dated GitHub+Notion handoff records. Do not claim complete route prediction/check-ins/official rescue integration.
 
 ## 8. Canonical navigation
 
@@ -71,4 +79,4 @@ Read [AGENTS](../../AGENTS.md), the [handoff protocol](HANDOFF_PROTOCOL.md), the
 - [Prior PR #8 screenshot proof](https://github.com/Arvex-studio/almaway-project-V1/pull/8)
 - [Integrated PR #9 screenshot proof](https://github.com/Arvex-studio/almaway-project-V1/pull/9)
 
-Updated by the PR #9 integration owner after live GitHub, Vercel and Notion readback. See the [append-only session report](sessions/2026-11-23T20-28+05-codex-pr8-pr9-visual-review.md).
+Updated by ChatGPT in a documented owner-authorized merge/closure session, after GitHub and Vercel readback. See [2026-11-23 merge/closure report](sessions/2026-11-23T21-03+05-chatgpt-pr9-merge-pr8-close.md).
