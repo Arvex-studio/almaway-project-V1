@@ -535,7 +535,7 @@ a {
 
 .sheet-identity p,
 .sheet-route > p,
-.sheet-route-empty {
+.sheet-route-status {
   margin: 0;
   color: var(--forest);
   font-size: 0.75rem;
@@ -556,7 +556,7 @@ a {
 .sheet-close svg { width: 1.25rem; height: 1.25rem; }
 
 .sheet-route,
-.sheet-route-empty {
+.sheet-route-status {
   margin-top: 0.75rem;
 }
 
@@ -649,6 +649,10 @@ a {
   .map-controls.raised { display: flex; }
   .map-controls.raised button + button { border-top: 0; border-left: 1px solid var(--mist); }
   .place-sheet { max-height: max(9rem, calc(100% - var(--sheet-bottom) - 10.5rem)); }
+}
+
+@media (max-width: 374px) and (max-height: 640px) {
+  .sheet-photo { display: none; }
 }
 
 @media (min-width: 700px) {

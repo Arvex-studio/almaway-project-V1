@@ -12,7 +12,7 @@ export function PlacePreviewSheet({ selectedPlace, onClose }: { selectedPlace: T
   const content = useRef<HTMLDivElement>(null)
   const heading = useRef<HTMLHeadingElement>(null)
   const titleId = useId()
-  const { category, coordinateSource, image, metrics, region, slug, title, why } = selectedPlace
+  const { category, coordinateSource, description, image, metrics, region, slug, title } = selectedPlace
 
   useEffect(() => {
     content.current?.scrollTo(0, 0)
@@ -33,7 +33,8 @@ export function PlacePreviewSheet({ selectedPlace, onClose }: { selectedPlace: T
           </button>
         </header>
 
-        {metrics.length > 0 ? (
+        <p className="sheet-route-status">Проверенного маршрута пока нет.</p>
+        {metrics.length > 0 && (
           <div className="sheet-route">
             <p>Параметры маршрута · демо</p>
             <dl className="sheet-metrics">
@@ -45,13 +46,12 @@ export function PlacePreviewSheet({ selectedPlace, onClose }: { selectedPlace: T
               ))}
             </dl>
           </div>
-        ) : <p className="sheet-route-empty">Для этой точки пока нет данных о маршруте.</p>}
-        <p className="sheet-summary">{why}</p>
+        )}
+        <p className="sheet-summary">{description}</p>
       </div>
 
       <div className="sheet-actions">
         <Link href={`/places/${slug}`} className="primary-button">Подробнее <ChevronRight aria-hidden="true" /></Link>
-        <Link href="/plan" className="secondary-button">План</Link>
         <SaveButton slug={slug} title={title} className="secondary-button sheet-save">
           <Bookmark aria-hidden="true" />
         </SaveButton>
