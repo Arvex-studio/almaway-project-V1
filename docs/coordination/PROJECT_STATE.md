@@ -1,6 +1,6 @@
 # Almaway Guard — Current Engineering State
-**Snapshot reviewed:** 2026-11-23 19:58 Asia/Almaty (UTC+05)  
-**Status:** P0 implemented on a **review branch**, not merged or publicly launched. **Integration decision pending owner review.**
+**Snapshot reviewed:** 2026-11-23 20:29 Asia/Almaty (UTC+05)
+**Status:** Guard P0 visual integration verified on PR #9. Owner review and merge authorization pending. [Dated integration report](sessions/2026-11-23T20-28+05-codex-pr8-pr9-visual-review.md) · [Engineering session](https://app.notion.com/p/421d12b48f4981449d0cf588bc49a963).
 
 This file records the **last observed** state and must be revalidated against GitHub/Notion at the start of every new agent session. It is a handoff summary, not a substitute for the actual branch HEAD. Only the integration owner should revise it, always with a dated session report.
 
@@ -10,11 +10,11 @@ Repo: https://github.com/Arvex-studio/almaway-project-V1
 
 | Branch/PR | Verified at snapshot | Purpose | State |
 | --- | --- | --- | --- |
-| [PR #9](https://github.com/Arvex-studio/almaway-project-V1/pull/9) · `codex/ag-guard-p0` | **Last application/integration commit `cac78146fa7856aa40576f29e26f5ef31a19905c`** | P0 hiking-preparation app, new Guard MapHome, route catalog, plan and export | `Ready for review`, mergeable, not merged at inspection |
+| [PR #9](https://github.com/Arvex-studio/almaway-project-V1/pull/9) · `codex/ag-guard-p0` | **Verified application `4ddaaf1288fd07166aed948b1ff6b9d109a9ccb9`; last read-back before this handoff `61a62002acda83b5639cfb0db931f92e6d86138f`** | P0 hiking-preparation app, new Guard MapHome, route catalog, plan and export | `Ready for review`, mergeable, not merged at inspection |
 | [PR #8](https://github.com/Arvex-studio/almaway-project-V1/pull/8) · `codex/alpine-map-route-preview` | Application head `a6cae13448bb1939d24c592f83a1084b4ff8740b` | Accessible map card, provenance, source status, 320x568 UX | `Ready for review`, mergeable, not merged at inspection |
 | `main` | `f5c787271cc9d4cbbc00e691581383bbbb9af488` at inspection | Released branch, prior to Guard P0 | No PR #8/#9 merge observed |
 
-**Note:** documentation commits for this handoff protocol are being added **after** `cac7814`. Always inspect live PR head before using a SHA, rebuilding or merging. The last verified application code did not change in this documentation-only update.
+The evidence and handoff commits follow the tested application commit. [PR #9 commits](https://github.com/Arvex-studio/almaway-project-V1/pull/9/commits) gives the current branch tip.
 
 ## 2. P0 capabilities verified by code inspection
 
@@ -27,20 +27,18 @@ Repo: https://github.com/Arvex-studio/almaway-project-V1
 - Local private trip drafts/history in browser + manual copy, TXT download and OS share where supported; **not** cloud sync, actual delivery status or automated trusted-contact check-ins.
 - `almaway-design` skill and Alpine UI design rules.
 
-## 3. Verified vs reported validation (do not conflate)
+## 3. Current verification
 
-**GitHub-observed:** PR #9 was `draft=false`, `mergeable=true`, code head `cac7814`; Vercel commit status `success`. PR #8 also `draft=false`, `mergeable=true`. No PR #9 independent GitHub Actions workflow run was found during review.
+The integrator ran the pinned pnpm install, typecheck, build, 16 Playwright tests (10 map, 6 missing-key), and diff checks. Matched production screenshots cover 320 × 568, 390 × 844 and 1440 × 900. A protected Vercel deployment of the application SHA passed the keyboard map-to-private-trip scenario at six widths from 320 through 1440. Across map and preparation, 12 axe scans reported zero violations. Weather returned its expected disabled-provider 503. Physical devices and assistive-technology sessions remain outstanding. [Screenshots and decisions](https://github.com/Arvex-studio/almaway-project-V1/tree/61a62002acda83b5639cfb0db931f92e6d86138f/docs/design/pr8-pr9-comparison) · [Per-width results](https://github.com/Arvex-studio/almaway-project-V1/blob/61a62002acda83b5639cfb0db931f92e6d86138f/docs/design/pr8-pr9-comparison/preview-checks.json) · [Tested Preview](https://almaway-project-v1-f0-preview-mbbfyfoi7-byicnq-3328s-projects.vercel.app/map).
 
-**Codex report, not independently re-run by this ChatGPT session:** `pnpm typecheck`, `pnpm build`, 14 Playwright tests, Chromium at 320/375/430/768/1024/1440, axe-core checked test set. Screenshots linked in [PR #9 description](https://github.com/Arvex-studio/almaway-project-V1/pull/9); local `C:/Users/.../QA.md` is **not a portable artifact** without upload. Vercel preview link was reported but protected access may differ per viewer.
+GitHub REST confirmed #9 open, ready for review and clean at the evidence commit. #8 remains open. [T407](https://app.notion.com/p/421d12b48f49819dbab1d3ae8fe71039) moved from Ready to Review. [T304](https://app.notion.com/p/421d12b48f4981d89102ee978d07ba57) remains in Review with updated browser evidence.
 
-## 4. The COMBO decision — one superior version, not two merges
+## 4. Integration decision
 
-**Chosen proposed direction (owner requested comparison + best synthesis; final screenshot selection pending review):**
-- **Base application = PR #9.** Its GuardShell, P0 planner, routes, data disclaimers, manual plan, map and separate styles remain primary.
-- **Reuse PR #8 proven UX behaviors:** source/date distinctions, compact legible panel on 320×568, focus on title, `Escape`, restore focus to marker/list, MapTiler/OSM attribution visibility, saving and explicit no verified route.
-- PR #9 **already integrated these behavioral improvements** at `cac7814`. Do not cherry-pick the entire PR #8 blindly or reintroduce `/plan` demo CTA.
-- **Open design gate:** compare PR #8 and #9 screenshots of the **same selected place** and identical 320×568, 390×844, 1440×900 viewports; evaluate hierarchy, route source trust, action visibility, map area, touch/keyboard, layout, small-screen attribution, motion and legibility. If a better visual pattern exists in #8, adapt it inside `components/guard/map-home.tsx` / `app/guard.css` with screenshot+test evidence. No blanket redesign or duplicate `PlacePreviewSheet`.
-- **Do not merge both PRs separately.** After code+visual review, owner may approve PR #9 merge; close PR #8 as `superseded by #9` **after** acceptance. Do not merge or close automatically.
+- Retain PR #9's GuardShell, one MapLibre surface, catalog, preparation and private journal. Retain #8's focus on heading, Escape, focus return, separated attribution and source, and pinned details/save actions.
+- Adapt #8's visible marker above the sheet and compact source/date strip. The camera measures the open panel and frames repeated list selections after panning. The status of full route geometry remains visible on 320 × 568.
+- The comparison rejects the legacy demo metrics and third-party thumbnail. The existing desktop catalog and map stay side by side. No demo planner CTA was introduced. The previous state and decision history are in the [handoff preceding the comparison](sessions/2026-11-23T20-04+05-chatgpt-combo-handoff.md).
+- The owner reviews #9. After acceptance and authorized merge, #8 can be closed as superseded.
 
 ## 5. Remaining blockers
 
@@ -51,23 +49,17 @@ Repo: https://github.com/Arvex-studio/almaway-project-V1
 - No background check-in, real notifications, SOS automation, or official MЧС integration. Keep those disabled/unclaimed.
 - Public release is **NOT** authorized by PR merge.
 
-## 6. Current work split (proposal; no parallel editor conflicts)
+## 6. Ownership
 
-| Role | Work | Shared files |
-| --- | --- | --- |
-| Integrator / PR #9 Codex | Compare PR #8/#9 visual screenshots, refine best sheet on Guard, integration tests, PR #9 updates | Own `components/guard/map-home.tsx`, `app/guard.css`, `components/map/*`, `tests/map.spec.ts` while working |
-| Reference / PR #8 Codex | No new edits to its PR; respond to narrow review questions or provide screenshot evidence | Do not edit Guard integration files |
-| Data/research team | Source+license proof of full GPX and actual route timings | Do not publish personal or unlicensed GPS |
-| Owner (user) | Final merge/release authorization | PR approval; no blanket consent |
+| Owner | Next decision or work |
+| --- | --- |
+| Product owner | Review PR #9, screenshots and T407; authorize merge explicitly. Decide closure of #8 after #9 acceptance. |
+| Integration owner | Record the owner's decision in the next dated session; retain the single Guard map and the regression tests. |
+| Data and QA team | Verify GPX rights and trail continuity, weather terms, physical-device behavior and screen-reader use. |
 
-## 7. Next recommended steps
+## 7. Start the next session
 
-1. Agent reads [Handoff Protocol](HANDOFF_PROTOCOL.md), this file and last session reports; refreshes live branch statuses.
-2. Integrator produces **side-by-side UI acceptance record** and makes only targeted visual changes improving PR #9; evidence on same viewport and source-data safety.
-3. Run `pnpm install --frozen-lockfile`, `pnpm typecheck`, `pnpm test`, `pnpm build`, test full new UI and reduced motion; add screenshots/links to PR.
-4. Record new evidence in a unique `sessions/` log and Notion task. Update this state after verification, preserve previous decision history.
-5. Ask owner to review **one** PR #9. Only after owner consent merge PR #9, then close #8 as superseded.
-6. Move to permissioned full GPX route data and real device QA; P0 public beta still subject to blockers.
+Read [AGENTS](../../AGENTS.md), the [handoff protocol](HANDOFF_PROTOCOL.md), the [latest session](sessions/2026-11-23T20-28+05-codex-pr8-pr9-visual-review.md), [Engineering Control Room](https://app.notion.com/p/421d12b48f49813ba5d4cc384c252938) and both live PRs. Fetch current refs before edits. A PR approval or merge is separate from public release authorization.
 
 ## 8. Canonical navigation
 
@@ -79,4 +71,4 @@ Repo: https://github.com/Arvex-studio/almaway-project-V1
 - [Prior PR #8 screenshot proof](https://github.com/Arvex-studio/almaway-project-V1/pull/8)
 - [Integrated PR #9 screenshot proof](https://github.com/Arvex-studio/almaway-project-V1/pull/9)
 
-Updated by ChatGPT in a docs-only handoff step; code and production environment unchanged. **Do not treat this file as proving later commits or merges.**
+Updated by the PR #9 integration owner after live GitHub, Vercel and Notion readback. See the [append-only session report](sessions/2026-11-23T20-28+05-codex-pr8-pr9-visual-review.md).
