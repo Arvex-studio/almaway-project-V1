@@ -38,6 +38,11 @@ export default function MapLibreSurface(props: MapSurfaceProps & { ref?: Ref<Map
   useEffect(() => { current.current = props; markersRef.current?.render() })
 
   useImperativeHandle(props.ref, () => ({
+    focus(coordinates) {
+      const map = mapRef.current
+      if (!map || !readyRef.current) return
+      map.easeTo({ center: [...coordinates], zoom: Math.max(map.getZoom(), 13), duration: 350 })
+    },
     locate() {
       const map = mapRef.current
       if (!map || !readyRef.current) return
@@ -80,7 +85,7 @@ export default function MapLibreSurface(props: MapSurfaceProps & { ref?: Ref<Map
       return
     }
     mapRef.current = map
-    map.addControl(new AttributionControl({ compact: true, customAttribution: '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a>' }), 'bottom-left')
+    map.addControl(new AttributionControl({ compact: true }), 'bottom-left')
     const markers = createMarkerRenderer(map, () => current.current)
     markersRef.current = markers
     const onLoad = () => {
@@ -101,7 +106,7 @@ export default function MapLibreSurface(props: MapSurfaceProps & { ref?: Ref<Map
       map.addLayer({
         id: 'almaway-route-lines', type: 'line', source: 'almaway-routes',
         layout: { 'line-cap': 'round', 'line-join': 'round', visibility: current.current.showRoutes === false ? 'none' : 'visible' },
-        paint: { 'line-color': '#2f7d5b', 'line-width': 4, 'line-opacity': 0.85 },
+        paint: { 'line-color': '#073526', 'line-width': 4, 'line-opacity': 0.9, 'line-dasharray': [2, 1.5] },
       })
       readyRef.current = true
       setStatus('ready')
@@ -166,7 +171,7 @@ export default function MapLibreSurface(props: MapSurfaceProps & { ref?: Ref<Map
   return <div className="map-canvas real-map" role="region" aria-label="Туристическая карта Алматинского региона">
     <div ref={container} className="map-engine" />
     {status !== 'ready' && <div className="map-message" role="status" aria-live="polite">
-      {status === 'loading' ? <strong>Загружаем карту…</strong> : <><strong>Карта пока недоступна</strong><p>Открой Открытия, чтобы посмотреть места.</p>{key && <button type="button" className="secondary-button" onClick={() => setAttempt(value => value + 1)}>Повторить</button>}<Link href="/explore" className="secondary-button">Открытия</Link></>}
+      {status === 'loading' ? <strong>Загружаем карту…</strong> : <><strong>Карта пока недоступна</strong><p>Места доступны в списке рядом с картой.</p>{key && <button type="button" className="ag-button ag-button-secondary" onClick={() => setAttempt(value => value + 1)}>Повторить</button>}<Link href="/routes" className="ag-source">Каталог маршрутов</Link></>}
     </div>}
     {notice && status === 'ready' && <div className="map-notice" role="status">{notice}<button type="button" aria-label="Закрыть сообщение" onClick={() => setNotice('')}>×</button></div>}
   </div>

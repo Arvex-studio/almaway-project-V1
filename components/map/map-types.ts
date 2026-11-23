@@ -1,7 +1,10 @@
 import type { FeatureCollection, LineString } from 'geojson'
 import type { TouristPlace } from '@/lib/tourist-places'
 
-export interface MapSurfaceHandle { locate: () => void }
+export interface MapSurfaceHandle {
+  locate: () => void
+  focus: (coordinates: readonly [longitude: number, latitude: number]) => void
+}
 
 export interface MapSurfaceProps {
   places: readonly TouristPlace[]

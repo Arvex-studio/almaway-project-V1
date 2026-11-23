@@ -1,9 +1,22 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
-import { Bookmark, ChevronRight, Map, Route } from 'lucide-react'
-import { AppShell } from '@/components/almaway'
-import { useDemoSaved } from '@/components/demo-state'
+import { ArrowLeft, Bookmark } from 'lucide-react'
+import { useDemoSaved, SaveButton } from '@/components/demo-state'
+import { GuardShell } from '@/components/guard/shell'
 import { touristPlaces } from '@/lib/tourist-places'
-export default function SavedPage() { const [tab, setTab] = useState('Места'); const { savedSlugs } = useDemoSaved(); const places = touristPlaces.filter(place => savedSlugs.includes(place.slug)); return <AppShell className="content-shell"><main className="content-page"><header className="page-header"><div><span className="eyebrow">ALMAWAY / ТВОЁ</span><h1>Сохранённое</h1><p>Места и планы, к которым хочется вернуться.</p></div><Bookmark className="page-mark" /></header><div className="segmented">{['Места', 'Маршруты', 'Планы'].map(item => <button type="button" className={tab === item ? 'selected' : ''} onClick={() => setTab(item)} key={item}>{item}</button>)}</div>{tab === 'Места' && places.length > 0 ? places.map(place => <article key={place.slug} className="saved-card"><div className="saved-image" style={{ backgroundImage: place.image ? `url(${place.image})` : undefined }} /><div><span className="eyebrow">{place.region}</span><h2>{place.title}</h2><p>{[place.distance, ...place.metrics.slice(0, 2).map(metric => metric.value)].filter(Boolean).join(' · ')}</p><div className="card-actions"><Link href={`/places/${place.slug}`} className="secondary-button">Открыть <ChevronRight /></Link><Link href="/map" className="primary-button">На карте <Map /></Link></div></div></article>) : <div className="empty-state"><Route /><h2>Здесь появятся {tab.toLowerCase()}</h2><p>Сохраняй идеи из Открытий и планы из Планировщика — они будут ждать тебя здесь.</p><Link href={tab === 'Планы' ? '/plan' : '/explore'} className="primary-button">Найти идеи</Link></div>}<section className="saved-note"><span>Совет AlmaWay</span><p>Сохраняй не только места, но и настроение поездки — так проще собрать маршрут позже.</p></section></main></AppShell> }
+
+export default function SavedPage() {
+  const { savedSlugs } = useDemoSaved()
+  const places = touristPlaces.filter(place => savedSlugs.includes(place.slug))
+  return <GuardShell><div className="ag-page ag-page-narrow">
+    <Link className="ag-back" href="/profile"><ArrowLeft aria-hidden="true" />Профиль</Link>
+    <header className="ag-page-header"><h1>Сохранённые места</h1></header>
+    <div className="ag-stack">
+      {places.length ? places.map(place => <article className="ag-card ag-panel" key={place.slug}>
+        <h2><Link href={`/places/${place.slug}`}>{place.title}</Link></h2><p>{place.region}</p>
+        <div className="ag-actions"><SaveButton slug={place.slug} title={place.title} className="ag-button ag-button-secondary" /></div>
+      </article>) : <div className="ag-card ag-empty"><Bookmark aria-hidden="true" /><h2>Пока ничего не сохранено</h2><Link className="ag-button" href="/map">Карта</Link></div>}
+    </div>
+  </div></GuardShell>
+}

@@ -1,11 +1,12 @@
 # AlmaWay V1
 
 Canonical frontend: Next.js App Router, React, TypeScript, Tailwind CSS v4.
-The approved V1 design and mock/demo state must be preserved.
+Almaway Guard P0 sits on the existing V1 frontend. Keep the Alpine design and label incomplete or sourced data explicitly.
 
 - Application routes live in `app/`; `/` redirects to `/map`.
 - Shared components live in `components/`; `components/map/map-surface.tsx` is the provider-independent map boundary.
-- Approved mock detail data lives in `lib/almaway-data.ts`; verified map points live in `lib/tourist-places.ts`; global design tokens/styles live in `app/globals.css`.
+- Geographic points live in `lib/tourist-places.ts`. Guard route metadata and calculations live in `lib/guard/`. The Alpine UI uses `app/guard.css` and `components/guard/`.
+- Use `.agents/skills/almaway-design/SKILL.md` for Guard design and QA. Keep source figures, geographic points and complete route geometry distinct.
 - Use pnpm (version in `.mise.toml` and `package.json`).
 - Run `pnpm install --frozen-lockfile`, `pnpm build`, `pnpm typecheck`, and `pnpm test`.
 - `pnpm dev` listens on `$PORT` or port 3000; do not assume a server is already running.
