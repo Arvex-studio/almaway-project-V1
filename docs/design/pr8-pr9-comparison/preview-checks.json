@@ -1,0 +1,152 @@
+[
+  {
+    "width": 320,
+    "height": 568,
+    "mapReady": true,
+    "states": {
+      "map": {
+        "overflow": false,
+        "violations": [],
+        "needsReview": []
+      },
+      "prepare": {
+        "overflow": false,
+        "violations": [],
+        "needsReview": []
+      }
+    },
+    "errors": [],
+    "responses": [
+      {
+        "host": "almaway-project-v1-f0-preview-mbbfyfoi7-byicnq-3328s-projects.vercel.app",
+        "path": "/api/guard/weather",
+        "status": 503
+      }
+    ]
+  },
+  {
+    "width": 375,
+    "height": 667,
+    "mapReady": true,
+    "states": {
+      "map": {
+        "overflow": false,
+        "violations": [],
+        "needsReview": []
+      },
+      "prepare": {
+        "overflow": false,
+        "violations": [],
+        "needsReview": []
+      }
+    },
+    "errors": [],
+    "responses": [
+      {
+        "host": "almaway-project-v1-f0-preview-mbbfyfoi7-byicnq-3328s-projects.vercel.app",
+        "path": "/api/guard/weather",
+        "status": 503
+      }
+    ]
+  },
+  {
+    "width": 430,
+    "height": 932,
+    "mapReady": true,
+    "states": {
+      "map": {
+        "overflow": false,
+        "violations": [],
+        "needsReview": []
+      },
+      "prepare": {
+        "overflow": false,
+        "violations": [],
+        "needsReview": []
+      }
+    },
+    "errors": [],
+    "responses": [
+      {
+        "host": "almaway-project-v1-f0-preview-mbbfyfoi7-byicnq-3328s-projects.vercel.app",
+        "path": "/api/guard/weather",
+        "status": 503
+      }
+    ]
+  },
+  {
+    "width": 768,
+    "height": 900,
+    "mapReady": true,
+    "states": {
+      "map": {
+        "overflow": false,
+        "violations": [],
+        "needsReview": []
+      },
+      "prepare": {
+        "overflow": false,
+        "violations": [],
+        "needsReview": []
+      }
+    },
+    "errors": [],
+    "responses": [
+      {
+        "host": "almaway-project-v1-f0-preview-mbbfyfoi7-byicnq-3328s-projects.vercel.app",
+        "path": "/api/guard/weather",
+        "status": 503
+      }
+    ]
+  },
+  {
+    "width": 1024,
+    "height": 900,
+    "mapReady": true,
+    "states": {
+      "map": {
+        "overflow": false,
+        "violations": [],
+        "needsReview": []
+      },
+      "prepare": {
+        "overflow": false,
+        "violations": [],
+        "needsReview": []
+      }
+    },
+    "errors": [],
+    "responses": [
+      {
+        "host": "almaway-project-v1-f0-preview-mbbfyfoi7-byicnq-3328s-projects.vercel.app",
+        "path": "/api/guard/weather",
+        "status": 503
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "height": 900,
+    "mapReady": true,
+    "states": {
+      "map": {
+        "overflow": false,
+        "violations": [],
+        "needsReview": []
+      },
+      "prepare": {
+        "overflow": false,
+        "violations": [],
+        "needsReview": []
+      }
+    },
+    "errors": [],
+    "responses": [
+      {
+        "host": "almaway-project-v1-f0-preview-mbbfyfoi7-byicnq-3328s-projects.vercel.app",
+        "path": "/api/guard/weather",
+        "status": 503
+      }
+    ]
+  }
+]
